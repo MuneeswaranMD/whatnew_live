@@ -4,161 +4,130 @@ import { Link } from 'react-router-dom';
 import Reveal from '../components/Reveal';
 
 const Payment: React.FC = () => {
-  return (
-    <div className="min-h-screen bg-slate-50">
-      
-       {/* Hero Header */}
-       <div className="bg-slate-900 text-white pt-24 pb-20 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary-600 rounded-full mix-blend-multiply filter blur-[100px] opacity-20"></div>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <Reveal>
-             <div className="flex items-center text-sm text-primary-200 mb-4">
-                <Link to="/" className="hover:text-white transition-colors">WhatNew</Link>
-                <ChevronRight size={14} className="mx-2"/>
-                <span>Payments</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-black text-white mb-2">Buy Now, Pay Later</h1>
-            <p className="text-slate-300">Flexible payment options for your purchases.</p>
-          </Reveal>
-        </div>
-      </div>
+   return (
+      <div className="min-h-screen bg-slate-50">
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-20 -mt-10">
-        
-        <Reveal>
-            <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden mb-8">
-               
-               <div className="p-8">
-                  
-                  <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl mb-12 flex items-start gap-4 shadow-lg">
-                    <div className="bg-primary-600 p-2 rounded-lg text-white mt-1"><HelpCircle size={20} /></div>
-                    <div>
-                        <p className="text-white font-bold text-lg">Need help with payment options?</p>
-                        <p className="text-slate-400 mt-1">Try managing payment methods or fixing a payment error in your account settings.</p>
-                    </div>
+         {/* Hero Header */}
+         <div className="bg-slate-900 text-white pt-24 pb-20 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-primary-600 rounded-full mix-blend-multiply filter blur-[100px] opacity-20"></div>
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+               <Reveal>
+                  <div className="flex items-center text-sm text-primary-200 mb-4">
+                     <Link to="/" className="hover:text-white transition-colors">WhatNew</Link>
+                     <ChevronRight size={14} className="mx-2" />
+                     <span>Payments</span>
+                  </div>
+                  <h1 className="text-4xl md:text-5xl font-black text-white mb-2">Buy Now, Pay Later</h1>
+                  <p className="text-slate-300">Flexible payment options for your purchases.</p>
+               </Reveal>
+            </div>
+         </div>
+
+         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-20 -mt-10">
+
+            <Reveal>
+               <div className="space-y-12">
+
+                  {/* Hero Cards Section */}
+                  <div className="grid md:grid-cols-2 gap-8">
+                     {/* Credit Card Visual */}
+                     <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"></div>
+                        <div className="relative z-10 flex flex-col h-full justify-between min-h-[220px]">
+                           <div className="flex justify-between items-start">
+                              <div className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-mono">Secure Payment</div>
+                              <CreditCard size={32} className="text-primary-400" />
+                           </div>
+                           <div>
+                              <div className="flex gap-4 mb-6">
+                                 <div className="w-12 h-8 bg-white/10 rounded-md"></div>
+                                 <div className="w-12 h-8 bg-white/10 rounded-md"></div>
+                                 <div className="w-12 h-8 bg-white/10 rounded-md"></div>
+                              </div>
+                              <div className="font-mono text-xl tracking-widest text-slate-400">**** **** **** 4242</div>
+                           </div>
+                        </div>
+                     </div>
+
+                     {/* Payment Methods Grid */}
+                     <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
+                        <h3 className="font-bold text-slate-900 mb-6 flex items-center gap-2">
+                           <CheckCircle size={20} className="text-green-500" /> Accepted Methods
+                        </h3>
+                        <div className="grid grid-cols-2 gap-4">
+                           <div className="border border-slate-200 rounded-xl p-4 flex items-center justify-center font-bold text-slate-700 hover:border-primary-500 hover:bg-primary-50 hover:text-primary-700 transition-all cursor-pointer">
+                              Credit Card
+                           </div>
+                           <div className="border border-slate-200 rounded-xl p-4 flex items-center justify-center font-bold text-slate-700 hover:border-primary-500 hover:bg-primary-50 hover:text-primary-700 transition-all cursor-pointer">
+                              PayPal
+                           </div>
+                           <div className="border border-slate-200 rounded-xl p-4 flex items-center justify-center font-bold text-slate-700 hover:border-primary-500 hover:bg-primary-50 hover:text-primary-700 transition-all cursor-pointer">
+                              Apple Pay
+                           </div>
+                           <div className="border border-slate-200 rounded-xl p-4 flex items-center justify-center font-bold text-slate-700 hover:border-primary-500 hover:bg-primary-50 hover:text-primary-700 transition-all cursor-pointer">
+                              Google Pay
+                           </div>
+                        </div>
+                     </div>
                   </div>
 
-                  {/* Section 1: Availability */}
-                  <section id="available" className="mb-16">
-                     <div className="flex items-center gap-3 mb-6">
-                        <div className="p-3 bg-primary-50 text-primary-600 rounded-xl">
-                           <CheckCircle size={24} />
+                  {/* BNPL Section */}
+                  <div className="bg-white rounded-3xl border border-slate-200 p-8 md:p-12 overflow-hidden relative">
+                     <div className="absolute top-0 right-0 w-64 h-64 bg-primary-50 rounded-full blur-[80px] translate-x-1/2 -translate-y-1/2"></div>
+                     <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-8">
+                           <span className="bg-primary-100 text-primary-600 p-3 rounded-2xl"><DollarSign size={24} /></span>
+                           <h2 className="text-3xl font-black text-slate-900">Buy Now, Pay Later.</h2>
                         </div>
-                        <h2 className="text-2xl font-bold text-slate-900">Availability</h2>
-                     </div>
-                     
-                     <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 space-y-6">
-                        <div className="flex gap-4 items-start">
-                            <Smartphone className="text-primary-500 mt-1" size={20} />
-                            <div>
-                                <p className="text-slate-900 font-bold">WhatNew App</p>
-                                <p className="text-slate-600 text-sm">Available on iOS or Android.</p>
-                            </div>
-                        </div>
-                        <div className="flex gap-4 items-start">
-                            <CreditCard className="text-primary-500 mt-1" size={20} />
-                            <div className="w-full">
-                                <p className="text-slate-900 font-bold">Minimum Purchase</p>
-                                <div className="grid sm:grid-cols-2 gap-4 mt-3">
-                                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                                        <span className="block font-black text-slate-900 text-lg">Klarna</span>
-                                        <span className="text-sm text-slate-600">₹10 or more</span>
-                                    </div>
-                                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                                        <span className="block font-black text-slate-900 text-lg">Affirm</span>
-                                        <span className="text-sm text-slate-600">₹50 or more (US only)</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex gap-4 items-start">
-                             <div className="w-5 h-5 flex items-center justify-center mt-1">
-                                <span className="text-primary-500 font-black text-xs">IN</span>
-                             </div>
-                            <div className="w-full">
-                                <p className="text-slate-900 font-bold">Supported Regions</p>
-                                 <ul className="mt-2 text-sm text-slate-600 space-y-1">
-                                    <li><strong className="text-slate-800">Klarna:</strong> US, UK, Canada, Europe</li>
-                                    <li><strong className="text-slate-800">Affirm:</strong> US only</li>
-                                 </ul>
-                            </div>
-                        </div>
-                     </div>
-                  </section>
 
-                  {/* Section 2: How to use */}
-                  <section id="how-to" className="mb-16">
-                     <div className="flex items-center gap-3 mb-6">
-                        <div className="p-3 bg-primary-50 text-primary-600 rounded-xl">
-                           <Smartphone size={24} />
+                        <div className="grid md:grid-cols-3 gap-8">
+                           <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                              <h3 className="font-bold text-slate-900 text-lg mb-2">Klarna.</h3>
+                              <p className="text-slate-500 text-sm mb-4">Split into 4 interest-free payments.</p>
+                              <ul className="space-y-2 text-sm font-medium text-slate-700">
+                                 <li className="flex items-center gap-2"><CheckCircle size={14} className="text-primary-500" /> No impact on credit score</li>
+                                 <li className="flex items-center gap-2"><CheckCircle size={14} className="text-primary-500" /> Instant approval</li>
+                              </ul>
+                           </div>
+                           <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                              <h3 className="font-bold text-slate-900 text-lg mb-2">Affirm.</h3>
+                              <p className="text-slate-500 text-sm mb-4">Pay over time, on your terms.</p>
+                              <ul className="space-y-2 text-sm font-medium text-slate-700">
+                                 <li className="flex items-center gap-2"><CheckCircle size={14} className="text-primary-500" /> 3, 6, or 12 month plans</li>
+                                 <li className="flex items-center gap-2"><CheckCircle size={14} className="text-primary-500" /> No hidden fees</li>
+                              </ul>
+                           </div>
+                           <div className="flex flex-col justify-center">
+                              <p className="text-slate-600 mb-6 text-lg">
+                                 Select <span className="font-bold text-slate-900">Klarna</span> or <span className="font-bold text-slate-900">Affirm</span> at checkout to view your custom payment plan options.
+                              </p>
+                              <Link to="/home" className="text-primary-600 font-bold hover:underline flex items-center gap-2">Start Shopping <ChevronRight size={16} /></Link>
+                           </div>
                         </div>
-                        <h2 className="text-2xl font-bold text-slate-900">How to Use</h2>
                      </div>
-                     
-                     <div className="relative border-l-2 border-slate-200 ml-4 space-y-8 pl-8 py-2">
-                        {[
-                            "Tap Buy Now in App",
-                            "Expand Payment section",
-                            "Choose Klarna or Affirm",
-                            "Tap Continue",
-                            "Complete provider checkout",
-                            "Confirm purchase"
-                        ].map((step, idx) => (
-                            <div key={idx} className="relative group">
-                                <span className="absolute -left-[41px] top-0 flex items-center justify-center w-6 h-6 rounded-full bg-white border-2 border-slate-300 group-hover:border-primary-500 group-hover:bg-primary-50 group-hover:text-primary-600 text-xs font-bold text-slate-500 transition-colors">
-                                    {idx + 1}
-                                </span>
-                                <p className="text-slate-800 font-medium">{step}</p>
-                            </div>
-                        ))}
-                     </div>
-                  </section>
+                  </div>
 
-                  {/* Section 3: Refunds */}
-                  <section id="refunds" className="mb-16">
-                     <div className="flex items-center gap-3 mb-6">
-                        <div className="p-3 bg-primary-50 text-primary-600 rounded-xl">
-                           <DollarSign size={24} />
+                  {/* FAQ */}
+                  <div className="bg-slate-900 rounded-3xl p-8 md:p-12 text-white">
+                     <h2 className="text-2xl font-bold mb-8">Common Questions</h2>
+                     <div className="grid md:grid-cols-2 gap-8">
+                        <div>
+                           <h4 className="font-bold text-lg mb-2 flex items-center gap-2"><AlertCircle size={18} className="text-primary-400" /> Is my payment secure?</h4>
+                           <p className="text-slate-400 leading-relaxed">Yes. We use industry-standard encryption and partner with Stripe for payment processing. We never store your full card details.</p>
                         </div>
-                        <h2 className="text-2xl font-bold text-slate-900">Refunds</h2>
-                     </div>
-                     <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                        <p className="text-slate-600 leading-relaxed">
-                            If your order qualifies under our <Link to="/returns" className="text-primary-600 font-bold hover:underline">Buyer Protection Policy</Link>, the provider will update your payment schedule or refund you automatically.
-                        </p>
-                     </div>
-                  </section>
-                  
-                   {/* Section 4: FAQs */}
-                  <section id="faqs" className="mb-8">
-                     <div className="flex items-center gap-3 mb-6">
-                        <div className="p-3 bg-primary-50 text-primary-600 rounded-xl">
-                           <HelpCircle size={24} />
+                        <div>
+                           <h4 className="font-bold text-lg mb-2 flex items-center gap-2"><AlertCircle size={18} className="text-primary-400" /> Can I change payment methods?</h4>
+                           <p className="text-slate-400 leading-relaxed">Once an order is placed, the payment method is locked. If you need to change it, you must cancel and re-order.</p>
                         </div>
-                        <h2 className="text-2xl font-bold text-slate-900">Common Questions</h2>
                      </div>
-
-                     <div className="grid gap-4">
-                        {[
-                            { q: "Why don’t I see BNPL options?", a: "Your purchase might be too small or in a restricted category." },
-                            { q: "Will this affect my credit score?", a: "It depends on the plan. Check with Klarna or Affirm directly." },
-                            { q: "Can I switch payment methods later?", a: "No, payment methods are locked once the order is placed." },
-                        ].map((faq, idx) => (
-                            <div key={idx} className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                                <h3 className="font-bold text-slate-900 mb-2">{faq.q}</h3>
-                                <p className="text-slate-600 text-sm">{faq.a}</p>
-                            </div>
-                        ))}
-                     </div>
-                  </section>
+                  </div>
 
                </div>
-            </div>
-        </Reveal>
+            </Reveal>
 
+         </div>
       </div>
-    </div>
-  );
+   );
 };
 
 export default Payment;
