@@ -131,7 +131,7 @@ const GeminiChat: React.FC = () => {
               </button>
             </div>
              <div className="text-center mt-2">
-                <p className="text-[10px] text-slate-400">Powered by Gemini AI</p>
+                <p className="text-[10px] text-slate-400">Powered by Whatnew AI</p>
             </div>
           </div>
         </div>
