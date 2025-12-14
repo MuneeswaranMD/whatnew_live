@@ -1,0 +1,515 @@
+{
+	"info": {
+		"_postman_id": "livestream-ecommerce-api",
+		"name": "Livestream Ecommerce API",
+		"description": "Complete API collection for the Livestream Ecommerce Backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{auth_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register Buyer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"newbuyer\",\n    \"email\": \"newbuyer@example.com\",\n    \"password\": \"testpass123\",\n    \"password_confirm\": \"testpass123\",\n    \"first_name\": \"New\",\n    \"last_name\": \"Buyer\",\n    \"phone_number\": \"9876543210\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register/buyer/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register", "buyer", ""]
+						}
+					}
+				},
+				{
+					"name": "Register Seller",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"newseller\",\n    \"email\": \"newseller@example.com\",\n    \"password\": \"testpass123\",\n    \"password_confirm\": \"testpass123\",\n    \"first_name\": \"New\",\n    \"last_name\": \"Seller\",\n    \"phone_number\": \"9876543211\",\n    \"shop_name\": \"New Test Shop\",\n    \"shop_address\": \"456 New Street, New City\",\n    \"aadhar_number\": \"123456789013\",\n    \"pan_number\": \"ABCDE1234G\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register/seller/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register", "seller", ""]
+						}
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('auth_token', response.token);",
+									"    pm.test('Login successful', () => {",
+									"        pm.expect(response.token).to.exist;",
+									"    });",
+									"} else {",
+									"    pm.test('Login failed', () => {",
+									"        pm.expect.fail('Login request failed');",
+									"    });",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"testbuyer1\",\n    \"password\": \"testpass123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/profile/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "profile", ""]
+						}
+					}
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"Updated\",\n    \"last_name\": \"Name\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/profile/update/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "profile", "update", ""]
+						}
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "logout", ""]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Get Categories",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/products/categories/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "categories", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/products/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", ""]
+						}
+					}
+				},
+				{
+					"name": "Create Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Product\",\n    \"description\": \"A test product for API testing\",\n    \"price\": \"99.99\",\n    \"category\": 1,\n    \"stock_quantity\": 10,\n    \"is_active\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products/products/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "products", ""]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Livestreams",
+			"item": [
+				{
+					"name": "Get Livestreams",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/livestreams/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "livestreams", ""]
+						}
+					}
+				},
+				{
+					"name": "Create Livestream",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Test Livestream\",\n    \"description\": \"A test livestream for API testing\",\n    \"scheduled_start_time\": \"2025-08-21T10:00:00Z\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/livestreams/livestreams/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "livestreams", "livestreams", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Live Streams",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/livestreams/livestreams/live_now/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "livestreams", "livestreams", "live_now", ""]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Get Cart",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/orders/cart/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "cart", ""]
+						}
+					}
+				},
+				{
+					"name": "Add to Cart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product\": 1,\n    \"quantity\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders/cart/add/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "cart", "add", ""]
+						}
+					}
+				},
+				{
+					"name": "Get Orders",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/orders/orders/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "orders", ""]
+						}
+					}
+				},
+				{
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"shipping_address\": {\n        \"full_name\": \"Test User\",\n        \"phone_number\": \"9876543210\",\n        \"address_line_1\": \"123 Test Street\",\n        \"city\": \"Test City\",\n        \"state\": \"Test State\",\n        \"pincode\": \"123456\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders/orders/create/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "orders", "create", ""]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Payments",
+			"item": [
+				{
+					"name": "Get Wallet",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/payments/wallet/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "payments", "wallet", ""]
+						}
+					}
+				},
+				{
+					"name": "Create Payment Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 1000,\n    \"currency\": \"INR\",\n    \"receipt\": \"order_001\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/payments/create-order/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "payments", "create-order", ""]
+						}
+					}
+				},
+				{
+					"name": "Purchase Credits",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 500,\n    \"credits\": 5\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/payments/credits/purchase/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "payments", "credits", "purchase", ""]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Addresses",
+			"item": [
+				{
+					"name": "Get Addresses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/addresses/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "addresses", ""]
+						}
+					}
+				},
+				{
+					"name": "Add Address",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"full_name\": \"Test User\",\n    \"phone_number\": \"9876543210\",\n    \"address_line_1\": \"123 Test Street\",\n    \"address_line_2\": \"Apt 4B\",\n    \"city\": \"Test City\",\n    \"state\": \"Test State\",\n    \"pincode\": \"123456\",\n    \"is_default\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/addresses/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "addresses", ""]
+						}
+					}
+				}
+			]
+		}
+	]
+}

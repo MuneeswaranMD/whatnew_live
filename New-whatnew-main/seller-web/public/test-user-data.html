@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test User Data</title>
+</head>
+<body>
+    <h1>Test User Data</h1>
+    <div id="result"></div>
+    
+    <script>
+        // Test the user data structure
+        const testData = {
+            "id": "ff652784-23d7-41aa-a855-d29710b43d87",
+            "username": "kanagarajm",
+            "email": "kanagarajm638@gmail.com",
+            "first_name": "KANAGARAJ",
+            "last_name": "M",
+            "user_type": "seller",
+            "phone_number": "6383588281",
+            "date_joined": "2025-08-20T19:43:30+05:30",
+            "profile": {
+                "user": {
+                    "id": "ff652784-23d7-41aa-a855-d29710b43d87",
+                    "username": "kanagarajm",
+                    "email": "kanagarajm638@gmail.com",
+                    "first_name": "KANAGARAJ",
+                    "last_name": "M",
+                    "user_type": "seller",
+                    "phone_number": "6383588281",
+                    "date_joined": "2025-08-20T19:43:30+05:30"
+                },
+                "shop_name": "NoCorps",
+                "shop_address": "1/8 dh",
+                "aadhar_number": "736407267868",
+                "pan_number": "HBKPM1747N",
+                "verification_status": "verified",
+                "credits": 1,
+                "is_account_active": true,
+                "verified_at": null
+            }
+        };
+        
+        // Test the display logic
+        const displayName = testData?.first_name || testData?.username;
+        const credits = testData?.profile?.credits || 0;
+        const verificationStatus = testData?.profile?.verification_status || 'pending_verification';
+        
+        document.getElementById('result').innerHTML = `
+            <p><strong>Display Name:</strong> ${displayName}</p>
+            <p><strong>Credits:</strong> ${credits}</p>
+            <p><strong>Verification Status:</strong> ${verificationStatus}</p>
+        `;
+    </script>
+</body>
+</html>

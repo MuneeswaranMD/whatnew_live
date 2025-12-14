@@ -1,0 +1,69 @@
+# Production requirements for Python 3.13.7
+# Core Django packages
+Django==4.2.7
+djangorestframework==3.14.0
+django-cors-headers==4.3.1
+
+# WebSocket and real-time features
+channels==4.0.0
+channels-redis==4.1.0
+daphne==4.0.0
+
+# Image processing
+Pillow==10.1.0
+
+# Payment processing
+razorpay==1.3.0
+
+# Agora SDK for livestreaming
+agora_token_builder==1.0.0
+
+# Utilities
+django-cleanup==6.0.0
+python-decouple==3.8
+
+# Database
+psycopg2-binary==2.9.7
+
+# Static files
+whitenoise==6.6.0
+
+# Redis
+redis==5.0.1
+
+# WebSocket client
+websocket-client==1.6.4
+
+# Production server
+gunicorn==21.2.0
+uvicorn[standard]==0.24.0
+
+# Background tasks
+celery==5.3.4
+django-celery-beat==2.5.0
+
+# Reporting
+reportlab==4.0.7
+
+# Email and templates
+django-email-templates==1.1.2
+django-extensions==3.2.3
+django-filter==23.5
+
+# Additional production dependencies
+django-environ==0.11.2
+django-storages==1.14.2
+boto3==1.29.7  # For AWS S3 if needed
+django-debug-toolbar==4.2.0  # Remove in production
+django-silk==5.0.4  # For performance monitoring
+
+# Security and monitoring
+django-security==0.18.0
+sentry-sdk[django]==1.38.0
+
+# API documentation
+drf-spectacular==0.26.5
+
+# Development tools (remove in production)
+django-seed==0.3.1
+factory-boy==3.3.0

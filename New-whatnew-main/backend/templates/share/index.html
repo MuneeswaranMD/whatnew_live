@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ share_content.title }}</title>
+    <meta name="description" content="{{ share_content.description }}">
+    
+    <!-- Dynamic Open Graph meta tags -->
+    <meta property="og:title" content="{{ share_content.title }}">
+    <meta property="og:description" content="{{ share_content.description }}">
+    <meta property="og:image" content="{{ share_content.image }}">
+    <meta property="og:url" content="{{ current_url }}">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card meta tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ share_content.title }}">
+    <meta name="twitter:description" content="{{ share_content.description }}">
+    <meta name="twitter:image" content="{{ share_content.image }}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- App Store Smart Banner for iOS -->
+    <meta name="apple-itunes-app" content="app-id=YOUR_APP_ID">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        .logo {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 20px;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .description {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .content {
+            margin-bottom: 30px;
+        }
+        
+        .referral-code {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 1.4rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a6f);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+        }
+        
+        .store-badges {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .store-badge {
+            height: 60px;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .store-badge:hover {
+            transform: scale(1.05);
+        }
+        
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .description {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">A</div>
+        
+        <h1>{{ share_content.title }}</h1>
+        <div class="description">
+            {{ share_content.description }}
+        </div>
+        
+        <div class="content">
+            {% if share_type == 'referral' and ref_code %}
+                <div class="referral-code">
+                    Code: {{ ref_code }}
+                </div>
+                <p>🎁 Get welcome bonus when you sign up!</p>
+            {% elif share_type == 'product' %}
+                <p>🛍️ Discover this amazing product on WhatNew</p>
+            {% elif share_type == 'livestream' %}
+                <p>📺 Join this exciting live shopping stream</p>
+            {% endif %}
+        </div>
+        
+        <div class="buttons">
+            <button class="btn btn-primary" id="open-app-btn">
+                <span class="loading" id="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    Opening App...
+                </span>
+                <span id="btn-text">Open in App</span>
+            </button>
+            
+            <div class="store-badges" id="store-badges" style="display: none;">
+                <a href="https://play.google.com/store/apps/details?id=com.shop.whatnew" target="_blank">
+                    <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" 
+                         alt="Get it on Google Play" class="store-badge" style="height: 60px;">
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate deep link URL
+        function generateDeepLink() {
+            const baseUrl = 'whatnew://';
+            
+            {% if share_type == 'referral' and ref_code %}
+                return `${baseUrl}referral?code={{ ref_code }}`;
+            {% elif share_type == 'product' and product_id %}
+                return `${baseUrl}product?id={{ product_id }}`;
+            {% elif share_type == 'livestream' and livestream_id %}
+                return `${baseUrl}livestream?id={{ livestream_id }}`;
+            {% else %}
+                return `${baseUrl}home`;
+            {% endif %}
+        }
+        
+        // Generate fallback URL for web browsers
+        function generateFallbackUrl() {
+            {% if share_type == 'referral' and ref_code %}
+                return `https://app.whatnew.in/referral?code={{ ref_code }}`;
+            {% elif share_type == 'product' and product_id %}
+                return `https://app.whatnew.in/product?id={{ product_id }}`;
+            {% elif share_type == 'livestream' and livestream_id %}
+                return `https://app.whatnew.in/livestream?id={{ livestream_id }}`;
+            {% else %}
+                return 'https://app.whatnew.in';
+            {% endif %}
+        }
+        
+        // Detect if user is on mobile
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+        
+        // Detect if app is installed (Android)
+        function detectAndroidApp() {
+            return new Promise((resolve) => {
+                const timeout = setTimeout(() => resolve(false), 2000);
+                
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = generateDeepLink();
+                
+                document.body.appendChild(iframe);
+                
+                // If app opens, page will lose focus
+                const handleVisibilityChange = () => {
+                    if (document.hidden) {
+                        clearTimeout(timeout);
+                        resolve(true);
+                    }
+                };
+                
+                document.addEventListener('visibilitychange', handleVisibilityChange);
+                
+                setTimeout(() => {
+                    document.removeEventListener('visibilitychange', handleVisibilityChange);
+                    document.body.removeChild(iframe);
+                }, 100);
+            });
+        }
+        
+        // Attempt to open the app
+        async function openApp() {
+            const deepLink = generateDeepLink();
+            const fallbackUrl = generateFallbackUrl();
+            
+            const loadingEl = document.getElementById('loading');
+            const btnTextEl = document.getElementById('btn-text');
+            const storeBadgesEl = document.getElementById('store-badges');
+            
+            // Show loading state
+            loadingEl.style.display = 'flex';
+            btnTextEl.style.display = 'none';
+            
+            if (isMobile()) {
+                // Try to open the app
+                const appOpened = await detectAndroidApp();
+                
+                if (!appOpened) {
+                    // App not installed, show store badges
+                    loadingEl.style.display = 'none';
+                    btnTextEl.textContent = 'App not installed';
+                    btnTextEl.style.display = 'block';
+                    storeBadgesEl.style.display = 'flex';
+                    
+                    // Redirect to Play Store after a delay
+                    setTimeout(() => {
+                        window.location.href = 'https://play.google.com/store/apps/details?id=com.shop.whatnew';
+                    }, 3000);
+                } else {
+                    // App opened successfully
+                    loadingEl.style.display = 'none';
+                    btnTextEl.textContent = 'Opening...';
+                    btnTextEl.style.display = 'block';
+                }
+            } else {
+                // Desktop - redirect to web version
+                setTimeout(() => {
+                    window.location.href = fallbackUrl;
+                }, 1000);
+            }
+        }
+        
+        // Initialize the page
+        function init() {
+            // Set up button click handler
+            document.getElementById('open-app-btn').addEventListener('click', openApp);
+            
+            // Auto-redirect on mobile after 3 seconds
+            {% if is_mobile %}
+                setTimeout(() => {
+                    openApp();
+                }, 3000);
+            {% endif %}
+        }
+        
+        // Start when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

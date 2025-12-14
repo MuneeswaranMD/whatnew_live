@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Order Status Update</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { text-align: center; border-bottom: 2px solid #28a745; padding-bottom: 20px; margin-bottom: 30px; }
+        .logo { font-size: 24px; font-weight: bold; color: #28a745; }
+        .status-box { background-color: #f8fff8; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; border: 2px solid #28a745; }
+        .status-title { font-size: 24px; font-weight: bold; color: #28a745; margin-bottom: 10px; }
+        .order-details { background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; }
+        .tracking-info { background-color: #e9ecef; padding: 15px; border-radius: 8px; margin: 15px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">WhatNew</div>
+            <h2>Order Status Update</h2>
+        </div>
+        
+        <div class="status-box">
+            <div class="status-title">{{ new_status|upper }}</div>
+            <p>{{ status_message }}</p>
+        </div>
+        
+        <div class="order-details">
+            <h3>Order Information</h3>
+            <p><strong>Order Number:</strong> #{{ order.order_number }}</p>
+            <p><strong>Order Date:</strong> {{ order.created_at|date:"F d, Y" }}</p>
+            <p><strong>Total Amount:</strong> ₹{{ order.total_amount }}</p>
+            <p><strong>Status Updated:</strong> {{ update_date|date:"F d, Y g:i A" }}</p>
+        </div>
+        
+        {% if notes %}
+        <div class="tracking-info">
+            <h4>Additional Notes:</h4>
+            <p>{{ notes }}</p>
+        </div>
+        {% endif %}
+        
+        <div class="order-details">
+            <h3>Ordered Items</h3>
+            {% for item in order.items.all %}
+            <div style="border-bottom: 1px solid #ddd; padding: 10px 0;">
+                <p><strong>{{ item.product_name }}</strong></p>
+                <p>Quantity: {{ item.quantity }} × ₹{{ item.unit_price }} = ₹{{ item.total_price }}</p>
+                <p><small>Seller: {{ item.seller.get_full_name|default:item.seller.username }}</small></p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if order.shipping_address %}
+        <div class="order-details">
+            <h3>Delivery Address</h3>
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745;">
+                <p style="margin: 5px 0; font-weight: bold; color: #333;">
+                    <i class="bi bi-person"></i> {{ order.shipping_address.full_name }}
+                </p>
+                <p style="margin: 5px 0; color: #666;">
+                    <i class="bi bi-telephone"></i> {{ order.shipping_address.phone_number }}
+                </p>
+                <div style="margin: 10px 0; color: #555;">
+                    <p style="margin: 3px 0;">{{ order.shipping_address.address_line_1 }}</p>
+                    {% if order.shipping_address.address_line_2 %}
+                    <p style="margin: 3px 0;">{{ order.shipping_address.address_line_2 }}</p>
+                    {% endif %}
+                    <p style="margin: 3px 0;">{{ order.shipping_address.city }}, {{ order.shipping_address.state }}</p>
+                    <p style="margin: 3px 0;">{{ order.shipping_address.pincode }}{% if order.shipping_address.country %}, {{ order.shipping_address.country }}{% endif %}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if new_status == 'shipped' %}
+        <div class="tracking-info" style="background-color: #e8f5e8; border: 2px solid #28a745;">
+            <h4>📦 Your order is on its way!</h4>
+            {% if tracking_id and courier_name %}
+            <div style="background-color: white; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                <h5 style="color: #28a745; margin: 0 0 10px 0;">🚚 Shipping Details</h5>
+                <p style="margin: 5px 0;"><strong>Courier:</strong> {{ courier_name }}</p>
+                <p style="margin: 5px 0;"><strong>Tracking ID:</strong> <code style="background-color: #f8f9fa; padding: 2px 6px; border-radius: 3px;">{{ tracking_id }}</code></p>
+                {% if estimated_delivery %}
+                <p style="margin: 5px 0;"><strong>Estimated Delivery:</strong> {{ estimated_delivery }}</p>
+                {% endif %}
+                <p style="margin: 15px 0 5px 0; font-size: 14px; color: #666;">
+                    💡 <em>Use the tracking ID above to track your package on the courier's website.</em>
+                </p>
+            </div>
+            {% endif %}
+            <p>Your package has been shipped and should arrive within {{ estimated_delivery|default:"3-7 business days" }}.</p>
+            <p>You'll receive another email when your order is delivered.</p>
+        </div>
+        {% elif new_status == 'delivered' %}
+        <div class="tracking-info">
+            <h4>🎉 Order Delivered Successfully!</h4>
+            <p>Thank you for shopping with WhatNew! We hope you love your purchase.</p>
+            <p>If you have any issues with your order, please contact our support team.</p>
+        </div>
+        {% elif new_status == 'cancelled' %}
+        <div class="tracking-info">
+            <h4>⚠️ Order Cancelled</h4>
+            <p>Your order has been cancelled. If this was unexpected, please contact our support team.</p>
+            <p>Any payments made will be refunded within 5-7 business days.</p>
+        </div>
+        {% endif %}
+
+        <div class="footer">
+            <p>Need help? Contact us at support@whatnew.com<br>WhatNew Team</p>
+            <p>This is an automated email. Please do not reply to this email.</p>
+            <p>&copy; 2025 WhatNew. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
