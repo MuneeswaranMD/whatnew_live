@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ShoppingBag, Zap, Gift, Tag, Play, Mail, CheckCircle, Smartphone, QrCode, Globe, Users, TrendingUp, Shield, Star, Crown, Timer, Sparkles, MessageCircle, Activity, DollarSign, Award } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Zap, Gift, Tag, Play, Mail, CheckCircle, Smartphone, QrCode, Globe, Users, TrendingUp, Shield, Star, Crown, Timer, Sparkles, MessageCircle, Activity, DollarSign, Award, Apple } from 'lucide-react';
 import Reveal from '../components/Reveal';
 
 // Animated Counter Hook
@@ -128,7 +128,7 @@ const Home: React.FC = () => {
                 </span>
                 <span className="text-white/80 text-sm font-medium">15,000+ Live Now</span>
                 <span className="text-white/40">•</span>
-                <span className="text-primary-300 text-sm font-bold">Join the Action</span>
+                <span className="text-white text-sm font-bold">Join the Action</span>
               </div>
 
               {/* Main Headline */}
@@ -593,7 +593,8 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <Reveal className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-primary-300 text-sm font-bold mb-6">
-              <Star size={16} className="text-yellow-400 fill-current" /> 4.9/5 from 50,000+ reviews
+              <Star size={16} className="text-yellow-400 fill-current " 
+Loved by the Community/> <span className="text-white">4.9/5 from 50,000+ reviews</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-black text-white mb-4">Loved by the Community</h2>
             <p className="text-xl text-slate-400">Real stories from real users who transformed their lives with WhatNew.</p>
@@ -751,7 +752,7 @@ const Home: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <Reveal>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-primary-300 text-sm font-bold mb-6">
-              <Mail size={16} /> Stay Connected
+              <Mail size={16} className="text-white" /> <span className="text-white">Stay Connected</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-black text-white mb-6">Subscribe to Our Newsletter</h2>
             <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
@@ -785,8 +786,8 @@ const Home: React.FC = () => {
 
               {/* Left Content */}
               <div className="flex-1 relative z-10 text-center lg:text-left">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-primary-300 text-sm font-bold mb-8 mx-auto lg:mx-0">
-                  <Smartphone size={16} /> Mobile App Live
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-600 text-primary-300 text-sm font-bold mb-8 mx-auto lg:mx-0">
+                  <Smartphone size={16} className="text-white" /> <span className="text-white">Mobile App Live</span>
                 </div>
                 <h2 className="text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
                   Shop Anywhere.<br />
@@ -798,14 +799,14 @@ const Home: React.FC = () => {
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                   <button className="bg-white text-slate-900 pl-4 pr-6 py-3 rounded-xl font-bold hover:bg-slate-200 transition-colors flex items-center gap-3">
-                    <div className="text-3xl"></div>
+                    <Apple size={32} />
                     <div className="text-left">
                       <div className="text-[10px] uppercase font-bold text-slate-500 leading-none mb-1">Download on the</div>
                       <div className="leading-none">App Store</div>
                     </div>
                   </button>
                   <button className="bg-white/10 text-white border border-white/10 pl-4 pr-6 py-3 rounded-xl font-bold hover:bg-white/20 transition-colors flex items-center gap-3">
-                    <div className="text-3xl">▶</div>
+                    <Play size={32} />
                     <div className="text-left">
                       <div className="text-[10px] uppercase font-bold text-slate-400 leading-none mb-1">Get it on</div>
                       <div className="leading-none">Google Play</div>
@@ -815,16 +816,22 @@ const Home: React.FC = () => {
               </div>
 
               {/* Right Content - Visual */}
-              <div className="flex-1 relative z-10 w-full max-w-md lg:max-w-none">
-                <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 rounded-3xl p-8 shadow-2xl transform hover:scale-[1.02] transition-transform duration-500">
+              <div className="flex-1 relative z-10 w-full max-w-md lg:max-w-none flex justify-center lg:justify-end">
+                <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl transform transition-all duration-500 hover:bg-white/10 group">
                   <div className="flex flex-col sm:flex-row items-center gap-8">
-                    <div className="bg-white p-4 rounded-2xl shadow-inner shrink-0">
-                      <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://whatnew.com/download" alt="Download QR" className="w-32 h-32 md:w-40 md:h-40 mix-blend-multiply" />
+                    <div className="bg-white p-4 rounded-2xl shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] shrink-0 transform -rotate-3 group-hover:rotate-0 transition-transform duration-500">
+                      <img 
+                        src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://whatnew.com/download" 
+                        alt="Download QR" 
+                        className="w-32 h-32 md:w-36 md:h-36 mix-blend-multiply" 
+                      />
                     </div>
                     <div className="text-center sm:text-left">
                       <h3 className="text-2xl font-bold text-white mb-2">Scan to Install</h3>
-                      <p className="text-slate-400 text-sm mb-4">Point your camera at the QR code to verify and install the app securely.</p>
-                      <div className="flex items-center justify-center sm:justify-start gap-2 text-primary-400 text-xs font-bold uppercase tracking-wide">
+                      <p className="text-slate-400 text-sm mb-5 leading-relaxed">
+                        Point your camera at the QR code to verify and install the app securely.
+                      </p>
+                      <div className="inline-flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wide bg-emerald-950/30 px-3 py-1.5 rounded-lg border border-emerald-500/20">
                         <CheckCircle size={14} /> Verified Safe
                       </div>
                     </div>

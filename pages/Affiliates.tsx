@@ -154,20 +154,25 @@ const Affiliates: React.FC = () => {
       <section className="py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-slate-900">How It Works</h2>
-            <p className="mt-4 text-slate-600">Start earning in four simple steps.</p>
+            <h2 className="text-sm font-bold text-primary-600 uppercase tracking-widest mb-2">How It Works</h2>
+            <h3 className="text-3xl md:text-4xl font-extrabold text-slate-900">Your Path to Partnership</h3>
+            <p className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">
+              Joining the WhatNew Affiliate Program is straightforward. Follow these simple steps to start earning.
+            </p>
           </Reveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {steps.map((step, idx) => (
               <Reveal key={idx} delay={idx * 100} className="h-full">
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 h-full flex flex-col relative overflow-hidden group hover:border-primary-200 transition-colors">
-                  <div className={`absolute top-0 left-0 w-full h-1 ₹{step.color}`}></div>
-                  <div className={`w-12 h-12 ₹{step.color} rounded-xl flex items-center justify-center mb-6 shadow-md group-hover:scale-110 transition-transform`}>
-                    {step.icon}
+                <div className="bg-white p-8 rounded-3xl shadow-lg border border-slate-100 h-full flex flex-col items-center text-center group hover:shadow-xl transition-all duration-300">
+                  <div className={`w-16 h-16 ${step.color} rounded-full flex items-center justify-center mb-6 text-white text-2xl font-bold shadow-md group-hover:scale-105 transition-transform`}>
+                    {idx + 1}
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900 mb-2">{step.title}</h3>
-                  <p className="text-sm text-slate-600 leading-relaxed">
+                  <div className="mb-4">
+                    {React.cloneElement(step.icon, { className: `w-8 h-8 ${step.color.replace('bg-', 'text-')}` })}
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-3">{step.title}</h3>
+                  <p className="text-base text-slate-600 leading-relaxed">
                     {step.description}
                   </p>
                 </div>

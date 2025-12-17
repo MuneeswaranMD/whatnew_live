@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Zap, Twitter, Github, Linkedin, Instagram } from 'lucide-react';
+import { Twitter, Github, Linkedin, Instagram } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -14,11 +14,12 @@ const Footer: React.FC = () => {
 
           {/* Brand Column */}
           <div className="space-y-6">
-            <Link to="/" className="flex items-center gap-2 text-white group">
-              <div className="bg-gradient-to-tr from-primary-500 to-indigo-600 text-white p-2 rounded-xl shadow-lg shadow-primary-500/30 group-hover:scale-110 transition-transform duration-300">
-                <Zap size={24} fill="currentColor" />
-              </div>
-              <span className="font-black text-2xl tracking-tight">WhatNew</span>
+            <Link to="/" className="flex items-center">
+              <img
+                src="/assets/logo.png"
+                alt="WhatNew - Live Shopping"
+                className="h-12 w-auto img-rounded"
+              />
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed">
               The premier destination for live commerce. Discover, bid, and buy from vetted sellers worldwide.

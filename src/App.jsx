@@ -22,6 +22,7 @@ import NotificationSettings from '../pages/NotificationSettings';
 import UpdateCredentials from '../pages/UpdateCredentials';
 import MultipleAccounts from '../pages/MultipleAccounts';
 import DeleteAccount from '../pages/DeleteAccount';
+import TermsConditions from '../pages/TermsConditions';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -56,6 +57,7 @@ const AnimatedRoutes = () => {
         <Route path="/update-credentials" element={<UpdateCredentials />} />
         <Route path="/multiple-accounts" element={<MultipleAccounts />} />
         <Route path="/delete-account" element={<DeleteAccount />} />
+        <Route path="/terms" element={<TermsConditions />} />
       </Routes>
     </div>
   );

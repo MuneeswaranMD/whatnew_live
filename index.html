@@ -1,36 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>WhatNew - Smart Digital Updates</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: {
-                50: '#fef2f2',
-                100: '#fee2e2',
-                500: '#ef4444',
-                600: '#dc2626',
-                700: '#b91c1c',
-                900: '#7f1d1d',
-              },
-              secondary: {
-                500: '#14b8a6', // Teal
-                600: '#0d9488',
-              }
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description"
+    content="WhatNew - The premier destination for live shopping. Discover, bid, and buy from vetted sellers worldwide with real-time auctions and exclusive drops." />
+  <meta name="keywords" content="live shopping, live auctions, ecommerce, online shopping, WhatNew" />
+  <meta name="theme-color" content="#dc2626" />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+  <title>WhatNew - Live Shopping | Discover, Bid & Buy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#fef2f2',
+              100: '#fee2e2',
+              500: '#ef4444',
+              600: '#dc2626',
+              700: '#b91c1c',
+              900: '#7f1d1d',
             },
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-            },
+            secondary: {
+              500: '#14b8a6', // Teal
+              600: '#0d9488',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
           },
         },
-      }
-    </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+      },
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script type="importmap">
 {
   "imports": {
@@ -44,8 +51,10 @@
 }
 </script>
 </head>
-  <body class="bg-slate-50 text-slate-900 antialiased">
-    <div id="root"></div>
+
+<body class="bg-slate-50 text-slate-900 antialiased">
+  <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>
+
 </html>

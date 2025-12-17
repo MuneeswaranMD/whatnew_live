@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Zap } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { NavItem } from '../types';
 
 const navItems: NavItem[] = [
@@ -34,15 +34,16 @@ const Navbar: React.FC = () => {
         w-full max-w-6xl transition-all duration-300
         ₹{scrolled || isOpen ? 'bg-white shadow-xl border border-slate-200/50' : 'bg-white backdrop-blur-sm border border-transparent shadow-sm'}
         rounded-2xl lg:rounded-full px-4 sm:px-6 py-3
-      `}> 
+      `}>
         <div className="flex justify-between items-center ">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-2 group flex-shrink-0">
-              <div className="bg-primary-600 text-white p-1.5 rounded-lg group-hover:bg-primary-700 transition-colors">
-                <Zap size={20} fill="currentColor" />
-              </div>
-              <span className="font-bold text-lg tracking-tight text-slate-900">WhatNew</span>
+            <Link to="/" className="flex items-center group flex-shrink-0">
+              <img
+                src="/assets/logo.png"
+                alt="WhatNew - Live Shopping"
+                className="h-10 w-auto object-contain"
+              />
             </Link>
           </div>
 
