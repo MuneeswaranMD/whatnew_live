@@ -1,6 +1,21 @@
+import React from 'react';
+
 export interface NavItem {
   label: string;
   path: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  icon?: React.ReactNode;
+  color?: string;
+  subcategories: SubCategory[];
+}
+
+export interface SubCategory {
+  id: string;
+  name: string;
 }
 
 export interface ToolItem {

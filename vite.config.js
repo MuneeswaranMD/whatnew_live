@@ -5,11 +5,13 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '');
     return {
-      // Use relative base so the built app can be served from any path (useful on EC2/nginx)
-      base: './',
+      // Use absolute base for proper routing with BrowserRouter
+      base: '/',
       server: {
         port: 3000,
         host: '0.0.0.0',
+        // Enable history API fallback for client-side routing
+        historyApiFallback: true,
       },
       build: {
         outDir: 'dist',

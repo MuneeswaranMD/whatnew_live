@@ -1,5 +1,5 @@
 import React from 'react';
-import { MemoryRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import GeminiChat from '../components/GeminiChat';
@@ -17,6 +17,11 @@ import Payment from '../pages/Payment';
 import ShippingDelivery from '../pages/ShippingDelivery';
 import Returns from '../pages/Returns';
 import Careers from '../pages/Careers';
+import Categories from '../pages/Categories';
+import NotificationSettings from '../pages/NotificationSettings';
+import UpdateCredentials from '../pages/UpdateCredentials';
+import MultipleAccounts from '../pages/MultipleAccounts';
+import DeleteAccount from '../pages/DeleteAccount';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -30,7 +35,7 @@ const ScrollToTop = () => {
 
 const AnimatedRoutes = () => {
   const location = useLocation();
-  
+
   return (
     <div key={location.pathname} className="animate-fade-in-up w-full flex-grow flex flex-col">
       <Routes>
@@ -46,6 +51,11 @@ const AnimatedRoutes = () => {
         <Route path="/shipping-delivery" element={<ShippingDelivery />} />
         <Route path="/returns" element={<Returns />} />
         <Route path="/careers" element={<Careers />} />
+        <Route path="/categories" element={<Categories />} />
+        <Route path="/notification-settings" element={<NotificationSettings />} />
+        <Route path="/update-credentials" element={<UpdateCredentials />} />
+        <Route path="/multiple-accounts" element={<MultipleAccounts />} />
+        <Route path="/delete-account" element={<DeleteAccount />} />
       </Routes>
     </div>
   );
@@ -53,7 +63,7 @@ const AnimatedRoutes = () => {
 
 const App = () => {
   return (
-    <MemoryRouter>
+    <BrowserRouter>
       <ScrollToTop />
       <div className="flex flex-col min-h-screen font-sans bg-slate-50">
         <Navbar />
@@ -63,7 +73,7 @@ const App = () => {
         <GeminiChat />
         <Footer />
       </div>
-    </MemoryRouter>
+    </BrowserRouter>
   );
 };
 

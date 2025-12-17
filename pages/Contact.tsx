@@ -105,14 +105,42 @@ const Contact: React.FC = () => {
                 {/* Sidebar */}
                 <div className="lg:w-1/4">
                     <Reveal delay={200}>
-                        <div className="bg-white rounded-3xl shadow-lg border border-slate-100 p-6 sticky top-24">
-                            <h3 className="font-bold text-slate-900 mb-4 uppercase text-xs tracking-wider text-primary-600">Related Articles</h3>
-                            <ul className="space-y-4 text-sm font-medium">
-                                <li><Link to="#" className="text-slate-600 hover:text-primary-600 transition-colors block py-1">Notification Settings</Link></li>
-                                <li><Link to="#" className="text-slate-600 hover:text-primary-600 transition-colors block py-1">Update Email/Password</Link></li>
-                                <li><Link to="#" className="text-slate-600 hover:text-primary-600 transition-colors block py-1">Multiple Accounts</Link></li>
-                                <li><Link to="#" className="text-slate-600 hover:text-primary-600 transition-colors block py-1">Deleting Account</Link></li>
-                                <li><span className="text-primary-600 block py-1 bg-primary-50 px-3 rounded-lg -mx-3">Contact Support</span></li>
+                        <div className="bg-gradient-to-br from-blue-50 to-white rounded-3xl shadow-lg border border-blue-100 p-6 sticky top-24">
+                            <div className="flex items-center gap-3 mb-6">
+                                <FileText size={24} className="text-blue-600" />
+                                <h3 className="font-bold text-slate-900 uppercase text-sm tracking-wider">Helpful Resources</h3>
+                            </div>
+                            <ul className="space-y-3">
+                                <li>
+                                    <Link to="/notification-settings" className="flex items-center justify-between p-3 bg-white rounded-xl shadow-sm border border-blue-50 hover:border-blue-200 transition-all group">
+                                        <span className="text-slate-700 group-hover:text-blue-600 font-medium text-sm">Notification Settings</span>
+                                        <ChevronRight size={16} className="text-slate-400 group-hover:text-blue-600 transition-colors" />
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/update-credentials" className="flex items-center justify-between p-3 bg-white rounded-xl shadow-sm border border-blue-50 hover:border-blue-200 transition-all group">
+                                        <span className="text-slate-700 group-hover:text-blue-600 font-medium text-sm">Update Email/Password</span>
+                                        <ChevronRight size={16} className="text-slate-400 group-hover:text-blue-600 transition-colors" />
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/multiple-accounts" className="flex items-center justify-between p-3 bg-white rounded-xl shadow-sm border border-blue-50 hover:border-blue-200 transition-all group">
+                                        <span className="text-slate-700 group-hover:text-blue-600 font-medium text-sm">Multiple Accounts</span>
+                                        <ChevronRight size={16} className="text-slate-400 group-hover:text-blue-600 transition-colors" />
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/delete-account" className="flex items-center justify-between p-3 bg-white rounded-xl shadow-sm border border-blue-50 hover:border-blue-200 transition-all group">
+                                        <span className="text-slate-700 group-hover:text-blue-600 font-medium text-sm">Deleting Account</span>
+                                        <ChevronRight size={16} className="text-slate-400 group-hover:text-blue-600 transition-colors" />
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/contact" className="flex items-center justify-between p-3 bg-primary-50 rounded-xl shadow-sm border border-primary-100">
+                                        <span className="text-primary-600 font-bold text-sm">Contact Support</span>
+                                        <ChevronRight size={16} className="text-primary-600" />
+                                    </Link>
+                                </li>
                             </ul>
                         </div>
                     </Reveal>

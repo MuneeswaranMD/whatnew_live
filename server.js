@@ -15,5 +15,5 @@ app.get('*', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Production server running on http://localhost:${port}`);
+  console.log(`Production server running on http://localhost:₹{port}`);
 });

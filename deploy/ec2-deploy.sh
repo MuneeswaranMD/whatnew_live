@@ -2,11 +2,11 @@
 set -euo pipefail
 
 # Usage: sudo ./ec2-deploy.sh /var/www/whatnew <git-repo-url>
-APP_DIR=${1:-/var/www/whatnew}
-REPO=${2:-}
+APP_DIR=₹{1:-/var/www/whatnew}
+REPO=₹{2:-}
 
-if [ -z "$REPO" ]; then
-  echo "Usage: $0 <app-dir> <git-repo-url>"
+if [ -z "₹REPO" ]; then
+  echo "Usage: ₹0 <app-dir> <git-repo-url>"
   exit 1
 fi
 
@@ -16,12 +16,12 @@ apt-get update
 apt-get install -y nodejs nginx git build-essential
 
 # Clone or update repo
-if [ -d "$APP_DIR" ]; then
-  cd "$APP_DIR"
+if [ -d "₹APP_DIR" ]; then
+  cd "₹APP_DIR"
   git pull
 else
-  git clone "$REPO" "$APP_DIR"
-  cd "$APP_DIR"
+  git clone "₹REPO" "₹APP_DIR"
+  cd "₹APP_DIR"
 fi
 
 # Install deps and build
@@ -48,7 +48,7 @@ WantedBy=multi-user.target
 EOF
 
 # Replace placeholder with actual app dir
-sed -i "s|%APP_DIR%|$APP_DIR|g" /etc/systemd/system/whatnew.service
+sed -i "s|%APP_DIR%|₹APP_DIR|g" /etc/systemd/system/whatnew.service
 
 # Reload, enable, start
 systemctl daemon-reload
@@ -64,10 +64,10 @@ server {
     location / {
         proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Upgrade ₹http_upgrade;
         proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
+        proxy_set_header Host ₹host;
+        proxy_cache_bypass ₹http_upgrade;
     }
 }
 EOF

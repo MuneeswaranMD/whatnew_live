@@ -41,14 +41,14 @@ const GeminiChat: React.FC = () => {
 
     try {
       const responseText = await sendMessageToGemini(userMessage.text);
-      
+
       const aiMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         text: responseText,
         sender: ChatSender.AI,
         timestamp: new Date()
       };
-      
+
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
       console.error(error);
@@ -84,9 +84,9 @@ const GeminiChat: React.FC = () => {
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex ${msg.sender === ChatSender.USER ? 'justify-end' : 'justify-start'}`}
+                className={`flex ₹{msg.sender === ChatSender.USER ? 'justify-end' : 'justify-start'}`}
               >
-                <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm shadow-sm ${
+                <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm shadow-sm ₹{
                   msg.sender === ChatSender.USER 
                     ? 'bg-primary-600 text-white rounded-tr-none' 
                     : 'bg-white text-slate-800 border border-slate-100 rounded-tl-none'
@@ -102,9 +102,9 @@ const GeminiChat: React.FC = () => {
             {isLoading && (
               <div className="flex justify-start">
                 <div className="bg-white text-slate-500 border border-slate-100 rounded-2xl rounded-tl-none px-4 py-3 text-sm shadow-sm flex items-center gap-2">
-                   <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                   <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                   <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                  <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                  <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                  <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                 </div>
               </div>
             )}
@@ -122,7 +122,7 @@ const GeminiChat: React.FC = () => {
                 placeholder="Ask about tech..."
                 className="flex-1 bg-transparent focus:outline-none text-sm text-slate-800 placeholder-slate-400"
               />
-              <button 
+              <button
                 onClick={handleSend}
                 disabled={!inputText.trim() || isLoading}
                 className="text-primary-600 hover:text-primary-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
@@ -130,8 +130,8 @@ const GeminiChat: React.FC = () => {
                 <Send size={18} />
               </button>
             </div>
-             <div className="text-center mt-2">
-                <p className="text-[10px] text-slate-400">Powered by Whatnew AI</p>
+            <div className="text-center mt-2">
+              <p className="text-[10px] text-slate-400">Powered by Whatnew AI</p>
             </div>
           </div>
         </div>
@@ -140,7 +140,7 @@ const GeminiChat: React.FC = () => {
       {/* Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`${isOpen ? 'bg-slate-700' : 'bg-primary-600'} hover:opacity-90 text-white rounded-full p-4 shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center gap-2`}
+        className={`₹{isOpen ? 'bg-slate-700' : 'bg-primary-600'} hover:opacity-90 text-white rounded-full p-4 shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center gap-2`}
       >
         {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
         {!isOpen && <span className="hidden sm:inline font-medium pr-2">Ask AI</span>}
