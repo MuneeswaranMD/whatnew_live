@@ -104,7 +104,7 @@ const Home: React.FC = () => {
       {/* Hero Section - New Design */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-primary-950">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
           <div className="absolute inset-0 opacity-30">
             <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-500 rounded-full mix-blend-multiply filter blur-[100px] animate-pulse"></div>
             <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary-500 rounded-full mix-blend-multiply filter blur-[100px] animate-pulse animation-delay-2000"></div>
@@ -119,7 +119,7 @@ const Home: React.FC = () => {
 
           {/* Centered Text Content */}
           <div className="text-center max-w-4xl mx-auto mb-16">
-            <Reveal>
+            <Reveal animation="blur-in" duration={1200}>
               {/* Badge */}
               <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary-500/20 to-secondary-500/20 backdrop-blur-xl border border-white/10 mb-8">
                 <span className="flex h-2 w-2 relative">
@@ -172,7 +172,7 @@ const Home: React.FC = () => {
           </div>
 
           {/* Floating Product Cards */}
-          <Reveal delay={300}>
+          <Reveal delay={400} animation="slide-up-scale">
             <div className="relative max-w-5xl mx-auto">
               {/* Main Featured Stream Card */}
               <div className="relative group">
@@ -319,7 +319,7 @@ const Home: React.FC = () => {
       {/* Trending Live Sections */}
       <section className="py-24 bg-white relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Reveal className="mb-12 flex justify-between items-end">
+          <Reveal animation="slide-up-scale" className="mb-12 flex justify-between items-end">
             <div>
               <h2 className="text-4xl font-black text-slate-900 mb-4">🔥 Hot Right Now</h2>
               <p className="text-slate-600 text-lg">The most popular live streams happening right now.</p>
@@ -333,7 +333,7 @@ const Home: React.FC = () => {
               { category: 'Sneakers', title: 'Rare Jordan 1s Auction Night', streamer: 'SneakerKing', viewers: '5.7k', image: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=600&q=80' },
               { category: 'Electronics', title: 'iPhone 16 Pro Unboxing', streamer: 'TechGuru', viewers: '12.1k', image: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&w=600&q=80' }
             ].map((item, i) => (
-              <Reveal key={i} delay={i * 100}>
+              <Reveal key={i} delay={i * 150} animation="zoom-in">
                 <div className="group rounded-3xl overflow-hidden relative aspect-[3/4] cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
                   <img src={item.image} alt={item.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
@@ -369,7 +369,7 @@ const Home: React.FC = () => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Header */}
-          <Reveal className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+          <Reveal animation="fade-right" className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
             <div>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary-500/20 to-secondary-500/20 border border-white/10 text-white text-sm font-bold mb-4">
                 <Sparkles size={16} className="text-yellow-400" />
@@ -424,7 +424,7 @@ const Home: React.FC = () => {
                 gradient: "from-pink-500 to-rose-500"
               }
             ].map((drop, i) => (
-              <Reveal key={i} delay={i * 100}>
+              <Reveal key={i} delay={i * 150} animation="flip-in">
                 <div className="group relative h-full">
                   {/* Gradient Border Glow */}
                   <div className={`absolute -inset-0.5 bg-gradient-to-r ${drop.gradient} rounded-3xl blur opacity-30 group-hover:opacity-60 transition-opacity duration-500`}></div>
@@ -487,7 +487,7 @@ const Home: React.FC = () => {
           </div>
 
           {/* Bottom CTA */}
-          <Reveal className="mt-12 text-center">
+          <Reveal animation="bounce-in" delay={200} className="mt-12 text-center">
             <p className="text-slate-400 mb-4">Want early access to all drops?</p>
             <Link to="/contact" className="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-900 rounded-2xl font-bold hover:bg-slate-100 transition-all hover:scale-105">
               <Crown size={20} className="text-yellow-500" /> Join VIP Waitlist
@@ -499,7 +499,7 @@ const Home: React.FC = () => {
       {/* How It Works Section (New) */}
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Reveal className="text-center max-w-3xl mx-auto mb-16">
+          <Reveal animation="blur-in" className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6">How WhatNew Works</h2>
             <p className="text-xl text-slate-600">The easiest way to buy and sell in the live economy.</p>
           </Reveal>
@@ -513,7 +513,7 @@ const Home: React.FC = () => {
               { step: "02", title: "Bid & Chat", desc: "Interact with sellers and place bids in real-time." },
               { step: "03", title: "Win & Pay", desc: "Secure checkout instantly when you win an auction." }
             ].map((item, i) => (
-              <Reveal key={i} delay={i * 150} className="text-center bg-white">
+              <Reveal key={i} delay={i * 200} animation="bounce-in" className="text-center bg-white">
                 <div className="w-24 h-24 mx-auto bg-white rounded-full border-4 border-slate-50 flex items-center justify-center mb-6 shadow-xl relative z-10 text-primary-600 font-black text-3xl">
                   {item.step}
                 </div>
@@ -532,7 +532,7 @@ const Home: React.FC = () => {
         <div className="absolute bottom-20 right-10 w-72 h-72 bg-secondary-100 rounded-full blur-[100px] opacity-50"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <Reveal className="text-center max-w-3xl mx-auto mb-16">
+          <Reveal animation="fade-down" className="text-center max-w-3xl mx-auto mb-16">
             <span className="text-primary-600 font-bold text-sm uppercase tracking-widest">Platform Features</span>
             <h2 className="text-4xl md:text-5xl font-black text-slate-900 mt-4 mb-6">
               Everything You Need to <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-secondary-600">Succeed</span>
@@ -543,7 +543,7 @@ const Home: React.FC = () => {
           {/* Bento Grid Layout */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Large Feature Card */}
-            <Reveal className="lg:col-span-2 lg:row-span-2">
+            <Reveal animation="slide-up-scale" className="lg:col-span-2 lg:row-span-2">
               <div className="h-full bg-gradient-to-br from-primary-600 to-primary-700 rounded-3xl p-8 md:p-10 text-white relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-[80px] group-hover:scale-150 transition-transform duration-700"></div>
                 <div className="relative z-10">
@@ -568,7 +568,7 @@ const Home: React.FC = () => {
               { icon: <Gift className="w-7 h-7" />, title: "Drops & Rewards", desc: "Exclusive drops and loyalty perks.", gradient: "from-purple-500 to-pink-500", bg: "bg-purple-50" },
               { icon: <Smartphone className="w-7 h-7" />, title: "Mobile First", desc: "Stream anywhere on 5G networks.", gradient: "from-orange-500 to-red-500", bg: "bg-orange-50" },
             ].map((feature, i) => (
-              <Reveal key={i} delay={i * 100}>
+              <Reveal key={i} delay={i * 120} animation="rotate-in">
                 <div className={`h-full ${feature.bg} p-8 rounded-3xl hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group border border-slate-100`}>
                   <div className={`bg-gradient-to-br ${feature.gradient} w-14 h-14 rounded-2xl flex items-center justify-center mb-6 text-white shadow-lg`}>
                     {feature.icon}
@@ -591,10 +591,10 @@ const Home: React.FC = () => {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <Reveal className="text-center mb-16">
+          <Reveal animation="zoom-out" className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-primary-300 text-sm font-bold mb-6">
-              <Star size={16} className="text-yellow-400 fill-current " 
-Loved by the Community/> <span className="text-white">4.9/5 from 50,000+ reviews</span>
+              <Star size={16} className="text-yellow-400 fill-current "
+                Loved by the Community /> <span className="text-white">4.9/5 from 50,000+ reviews</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-black text-white mb-4">Loved by the Community</h2>
             <p className="text-xl text-slate-400">Real stories from real users who transformed their lives with WhatNew.</p>
@@ -628,7 +628,7 @@ Loved by the Community/> <span className="text-white">4.9/5 from 50,000+ reviews
                 gradient: "from-orange-500 to-red-500"
               }
             ].map((review, i) => (
-              <Reveal key={i} delay={i * 100}>
+              <Reveal key={i} delay={i * 150} animation="fade-left">
                 <div className={`relative h-full group ${review.featured ? 'md:-mt-4 md:mb-4' : ''}`}>
                   {/* Gradient Border for Featured */}
                   {review.featured && (
@@ -671,7 +671,7 @@ Loved by the Community/> <span className="text-white">4.9/5 from 50,000+ reviews
       {/* Live Shopping Marketplace Section */}
       <section className="py-24 bg-gradient-to-b from-white to-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Reveal className="text-center mb-16">
+          <Reveal animation="blur-in" className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6">The Live Shopping Marketplace</h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto mb-8">Shop, sell, and connect around the things you love.</p>
             <Link to="/blog" className="inline-flex items-center gap-2 bg-primary-600 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-primary-500 transition-all hover:scale-105 shadow-lg shadow-primary-600/30">
@@ -682,7 +682,7 @@ Loved by the Community/> <span className="text-white">4.9/5 from 50,000+ reviews
           {/* Feature Cards Grid */}
           <div className="grid md:grid-cols-3 gap-8 mt-16">
             {/* Join In the Fun */}
-            <Reveal delay={100}>
+            <Reveal delay={100} animation="fade-right">
               <div className="group relative rounded-3xl overflow-hidden h-[450px] cursor-pointer">
                 <img
                   src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=80"
@@ -702,7 +702,7 @@ Loved by the Community/> <span className="text-white">4.9/5 from 50,000+ reviews
             </Reveal>
 
             {/* We've Got It All */}
-            <Reveal delay={200}>
+            <Reveal delay={200} animation="fade-up">
               <div className="group relative rounded-3xl overflow-hidden h-[450px] cursor-pointer">
                 <img
                   src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80"
@@ -722,7 +722,7 @@ Loved by the Community/> <span className="text-white">4.9/5 from 50,000+ reviews
             </Reveal>
 
             {/* Find Incredible Deals */}
-            <Reveal delay={300}>
+            <Reveal delay={300} animation="zoom-in">
               <div className="group relative rounded-3xl overflow-hidden h-[450px] cursor-pointer">
                 <img
                   src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=800&q=80"
@@ -750,7 +750,7 @@ Loved by the Community/> <span className="text-white">4.9/5 from 50,000+ reviews
         <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-secondary-600/20 rounded-full mix-blend-screen filter blur-[150px] translate-x-1/2 translate-y-1/2"></div>
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          <Reveal>
+          <Reveal animation="slide-up-scale">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-primary-300 text-sm font-bold mb-6">
               <Mail size={16} className="text-white" /> <span className="text-white">Stay Connected</span>
             </div>
@@ -778,7 +778,7 @@ Loved by the Community/> <span className="text-white">4.9/5 from 50,000+ reviews
       {/* Call to Action - Redesigned */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50">
         <div className="max-w-7xl mx-auto">
-          <Reveal>
+          <Reveal animation="bounce-in">
             <div className="bg-slate-900 rounded-[3rem] p-8 md:p-16 relative overflow-hidden flex flex-col lg:flex-row items-center gap-16">
               {/* Background Glows */}
               <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary-900/40 rounded-full mix-blend-screen filter blur-[150px] translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
@@ -820,10 +820,10 @@ Loved by the Community/> <span className="text-white">4.9/5 from 50,000+ reviews
                 <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl transform transition-all duration-500 hover:bg-white/10 group">
                   <div className="flex flex-col sm:flex-row items-center gap-8">
                     <div className="bg-white p-4 rounded-2xl shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] shrink-0 transform -rotate-3 group-hover:rotate-0 transition-transform duration-500">
-                      <img 
-                        src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://whatnew.com/download" 
-                        alt="Download QR" 
-                        className="w-32 h-32 md:w-36 md:h-36 mix-blend-multiply" 
+                      <img
+                        src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://whatnew.com/download"
+                        alt="Download QR"
+                        className="w-32 h-32 md:w-36 md:h-36 mix-blend-multiply"
                       />
                     </div>
                     <div className="text-center sm:text-left">

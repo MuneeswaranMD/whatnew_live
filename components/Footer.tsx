@@ -18,9 +18,10 @@ const Footer: React.FC = () => {
               <img
                 src="/assets/logo.png"
                 alt="WhatNew - Live Shopping"
-                className="h-12 w-auto img-rounded"
+                className="h-12 w-auto rounded-full"
               />
             </Link>
+            <h3 className="text-white font-bold text-xl tracking-wider">WhatNew Live</h3>
             <p className="text-slate-400 text-sm leading-relaxed">
               The premier destination for live commerce. Discover, bid, and buy from vetted sellers worldwide.
             </p>
