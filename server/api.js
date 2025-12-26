@@ -3,6 +3,8 @@ import { BlogPost, LiveStream, Drop, Testimonial } from './models.js';
 
 const router = express.Router();
 
+router.get('/health', (req, res) => res.json({ status: 'ok', time: new Date() }));
+
 // Helper for generic CRUD
 const setupCrud = (route, model) => {
   // Get all
