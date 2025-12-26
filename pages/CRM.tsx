@@ -62,6 +62,10 @@ const CRM: React.FC = () => {
     const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
     const [tempImageUrl, setTempImageUrl] = useState('');
     const [selectedEnquiry, setSelectedEnquiry] = useState<any>(null);
+    const [notifications, setNotifications] = useState<any[]>([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+    const [notifiedEnquiryIds, setNotifiedEnquiryIds] = useState<Set<string>>(new Set());
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const handleScroll = () => {
@@ -131,11 +135,59 @@ const CRM: React.FC = () => {
         setTimeout(() => setMessage(null), 3000);
     };
 
+    const addNotification = (title: string, message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info') => {
+        const newNotif = {
+            id: Date.now(),
+            title,
+            message,
+            type,
+            timestamp: new Date(),
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            read: false
+        };
+        setNotifications(prev => [newNotif, ...prev].slice(0, 5));
+        setUnreadCount(prev => prev + 1);
+    };
+
+    const checkNewEnquiries = async () => {
+        try {
+            const enquiries = await contentService.getEnquiries();
+            const newEnquiries = enquiries.filter(e => e.status === 'new' && !notifiedEnquiryIds.has(e._id));
+
+            if (newEnquiries.length > 0) {
+                newEnquiries.forEach(e => {
+                    addNotification(
+                        'New Enquiry Received',
+                        `${e.firstName} is asking about "${e.topic}"`,
+                        'error'
+                    );
+                });
+                setNotifiedEnquiryIds(prev => {
+                    const next = new Set(prev);
+                    newEnquiries.forEach(e => next.add(e._id));
+                    return next;
+                });
+            }
+        } catch (err) {
+            console.error('Enquiry check failed', err);
+        }
+    };
+
+    useEffect(() => {
+        // Check once on mount
+        checkNewEnquiries();
+
+        // Check periodically (every 30 seconds)
+        const interval = setInterval(checkNewEnquiries, 30000);
+        return () => clearInterval(interval);
+    }, [notifiedEnquiryIds]);
+
     const handleDelete = async (id: string) => {
         if (!window.confirm('Are you sure you want to delete this item?')) return;
         try {
             await contentService.delete(activeTab, id);
             showMessage('Deleted successfully', 'success');
+            addNotification('Item Deleted', `Successfully removed an item from ${activeTab}`, 'warning');
             fetchData();
         } catch (err) {
             showMessage('Delete failed', 'error');
@@ -201,9 +253,11 @@ const CRM: React.FC = () => {
             if (editingItem) {
                 await contentService.update(activeTab, editingItem._id, data);
                 showMessage('Updated successfully', 'success');
+                addNotification('Content Updated', `Modifications saved to ${activeTab}`, 'info');
             } else {
                 await contentService.create(activeTab, data);
                 showMessage('Created successfully', 'success');
+                addNotification('New Content Added', `A new entry was published to ${activeTab}`, 'success');
             }
             setIsEditing(false);
             setEditingItem(null);
@@ -319,10 +373,74 @@ const CRM: React.FC = () => {
                         <button className="relative text-slate-400 hover:text-white transition-colors md:hidden">
                             <Search size={20} />
                         </button>
-                        <button className="relative text-slate-400 hover:text-white transition-colors">
-                            <Bell size={20} />
-                            <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary-600 rounded-full"></span>
-                        </button>
+                        <div className="relative">
+                            <button
+                                onClick={() => {
+                                    setIsNotificationsOpen(!isNotificationsOpen);
+                                    if (!isNotificationsOpen) setUnreadCount(0);
+                                }}
+                                className={`relative p-2.5 rounded-2xl transition-all border ${isNotificationsOpen ? 'bg-primary-600 text-white border-primary-500' : 'text-slate-400 hover:text-white border-white/5 hover:bg-white/5'}`}
+                            >
+                                <Bell size={20} />
+                                {unreadCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary-600 rounded-full flex items-center justify-center text-[10px] font-black text-white ring-4 ring-slate-950">
+                                        {unreadCount}
+                                    </span>
+                                )}
+                            </button>
+
+                            {/* Notifications Dropdown */}
+                            {isNotificationsOpen && (
+                                <>
+                                    <div className="fixed inset-0 z-[40]" onClick={() => setIsNotificationsOpen(false)}></div>
+                                    <div className="absolute right-0 mt-4 w-80 lg:w-96 bg-slate-900 border border-white/10 rounded-[32px] shadow-2xl z-[50] overflow-hidden backdrop-blur-3xl">
+                                        <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                                            <h5 className="text-sm font-black text-white uppercase tracking-widest leading-none">Notifications</h5>
+                                            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{notifications.length} Recent</span>
+                                        </div>
+                                        <div className="max-h-[400px] overflow-y-auto scrollbar-hide py-2">
+                                            {notifications.length === 0 ? (
+                                                <div className="p-12 text-center">
+                                                    <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/5">
+                                                        <Inbox className="text-slate-600" size={24} />
+                                                    </div>
+                                                    <p className="text-slate-500 text-sm font-medium">All caught up!</p>
+                                                </div>
+                                            ) : (
+                                                <div className="divide-y divide-white/5 px-2">
+                                                    {notifications.map((notif) => (
+                                                        <div key={notif.id} className="p-4 hover:bg-white/[0.03] transition-colors rounded-2xl group">
+                                                            <div className="flex gap-4">
+                                                                <div className={`mt-1 flex-shrink-0 w-2 h-2 rounded-full ${notif.type === 'success' ? 'bg-emerald-500 shadow-lg shadow-emerald-500/20' :
+                                                                    notif.type === 'warning' ? 'bg-orange-500 shadow-lg shadow-orange-500/20' :
+                                                                        notif.type === 'error' ? 'bg-rose-500 shadow-lg shadow-rose-500/20' :
+                                                                            'bg-blue-500 shadow-lg shadow-blue-500/20'
+                                                                    }`}></div>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <div className="flex items-center justify-between gap-2 mb-1">
+                                                                        <h6 className="text-sm font-bold text-white truncate group-hover:text-primary-400 transition-colors">{notif.title}</h6>
+                                                                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider flex-shrink-0">{notif.time}</span>
+                                                                    </div>
+                                                                    <p className="text-xs text-slate-500 font-medium leading-relaxed">{notif.message}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="p-4 bg-white/[0.02] border-t border-white/5">
+                                            <button
+                                                onClick={() => setNotifications([])}
+                                                className="w-full py-3 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-white/5"
+                                            >
+                                                Clear All Activity
+                                            </button>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
                         <div className="flex items-center gap-3 pl-3 lg:pl-6 border-l border-white/10">
                             <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center font-bold text-sm text-white flex-shrink-0">A</div>
                             <span className="text-sm font-bold text-white hidden sm:block">Admin</span>
