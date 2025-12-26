@@ -22,7 +22,21 @@ import {
     DollarSign,
     Settings,
     Bell,
-    ExternalLink
+    ExternalLink,
+    Menu,
+    Type,
+    Image as ImageIcon,
+    User,
+    Calendar,
+    Clock,
+    Tag,
+    Award,
+    Hash,
+    Link as LinkIcon,
+    Palette,
+    Layers,
+    Quote,
+    Star
 } from 'lucide-react';
 import { auth } from '../src/firebase';
 import { signOut } from 'firebase/auth';
@@ -35,6 +49,7 @@ type TabType = 'blogs' | 'streams' | 'drops' | 'testimonials';
 const CRM: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabType>('blogs');
     const [isEditing, setIsEditing] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<any>(null);
     const [items, setItems] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -138,9 +153,20 @@ const CRM: React.FC = () => {
     };
 
     return (
-        <div className="flex min-h-screen bg-slate-950 font-sans selection:bg-primary-500/30">
+        <div className="flex min-h-screen bg-slate-950 font-sans selection:bg-primary-500/30 overflow-x-hidden">
+            {/* Sidebar Overlay for Mobile */}
+            {isSidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 lg:hidden"
+                    onClick={() => setIsSidebarOpen(false)}
+                ></div>
+            )}
+
             {/* Sidebar */}
-            <aside className="w-72 bg-slate-900/50 border-r border-white/5 backdrop-blur-2xl flex flex-col sticky top-0 h-screen z-40">
+            <aside className={`
+                w-72 bg-slate-900/50 border-r border-white/5 backdrop-blur-2xl flex flex-col fixed lg:sticky top-0 h-screen z-50 transition-transform duration-300
+                ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+            `}>
                 <div className="p-8">
                     <div className="flex items-center gap-3 mb-10">
                         <div className="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-600/20">
@@ -157,10 +183,13 @@ const CRM: React.FC = () => {
                         {tabs.map((tab) => (
                             <button
                                 key={tab.id}
-                                onClick={() => setActiveTab(tab.id as TabType)}
+                                onClick={() => {
+                                    setActiveTab(tab.id as TabType);
+                                    setIsSidebarOpen(false);
+                                }}
                                 className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all group ${activeTab === tab.id
-                                        ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20'
-                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                    ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20'
+                                    : 'text-slate-400 hover:text-white hover:bg-white/5'
                                     }`}
                             >
                                 <span className={`transition-transform group-hover:scale-110`}>
@@ -199,39 +228,48 @@ const CRM: React.FC = () => {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 flex flex-col min-w-0">
+            <main className="flex-1 flex flex-col min-w-0 w-full overflow-x-hidden">
                 {/* Top Header */}
-                <header className="h-20 border-b border-white/5 bg-slate-900/20 backdrop-blur-md flex items-center justify-between px-10 sticky top-0 z-30">
+                <header className="h-20 border-b border-white/5 bg-slate-900/20 backdrop-blur-md flex items-center justify-between px-4 lg:px-10 sticky top-0 z-30">
                     <div className="flex items-center gap-4">
-                        <div className="h-8 w-px bg-white/10 mx-2"></div>
-                        <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                        <button
+                            onClick={() => setIsSidebarOpen(true)}
+                            className="p-2 lg:hidden text-slate-400 hover:text-white transition-colors"
+                        >
+                            <Menu size={24} />
+                        </button>
+                        <div className="h-8 w-px bg-white/10 mx-2 hidden lg:block"></div>
+                        <h2 className="text-base lg:text-lg font-bold text-white flex items-center gap-2">
                             Dashboard <span className="text-slate-500">/</span> <span className="text-primary-400 capitalized">{activeTab}</span>
                         </h2>
                     </div>
 
-                    <div className="flex items-center gap-6">
-                        <div className="relative">
+                    <div className="flex items-center gap-3 lg:gap-6">
+                        <div className="relative hidden md:block">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
                             <input
                                 type="text"
                                 placeholder="Global Search..."
-                                className="pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 w-64 transition-all"
+                                className="pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 w-48 lg:w-64 transition-all"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
+                        <button className="relative text-slate-400 hover:text-white transition-colors md:hidden">
+                            <Search size={20} />
+                        </button>
                         <button className="relative text-slate-400 hover:text-white transition-colors">
                             <Bell size={20} />
                             <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary-600 rounded-full"></span>
                         </button>
-                        <div className="flex items-center gap-3 pl-6 border-l border-white/10">
-                            <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center font-bold text-sm text-white">A</div>
-                            <span className="text-sm font-bold text-white">Admin</span>
+                        <div className="flex items-center gap-3 pl-3 lg:pl-6 border-l border-white/10">
+                            <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center font-bold text-sm text-white flex-shrink-0">A</div>
+                            <span className="text-sm font-bold text-white hidden sm:block">Admin</span>
                         </div>
                     </div>
                 </header>
 
-                <div className="p-10 overflow-y-auto">
+                <div className="p-4 lg:p-10 overflow-y-auto w-full overflow-x-hidden">
                     {/* Welcome Section */}
                     <Reveal animation="fade-right">
                         <div className="mb-10">
@@ -263,18 +301,18 @@ const CRM: React.FC = () => {
 
                     {/* Content Section */}
                     <Reveal animation="fade-up" delay={400}>
-                        <div className="bg-slate-900/50 border border-white/5 rounded-[32px] overflow-hidden backdrop-blur-3xl shadow-2xl">
+                        <div className="bg-slate-900/50 border border-white/5 rounded-2xl lg:rounded-[32px] overflow-hidden backdrop-blur-3xl shadow-2xl">
                             {/* Table Header */}
-                            <div className="p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                            <div className="p-4 lg:p-8 border-b border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/[0.02]">
                                 <div>
-                                    <h4 className="text-xl font-bold text-white mb-1">Manage {activeTab}</h4>
-                                    <p className="text-sm text-slate-500 font-medium">Create, update or remove items from your platform live.</p>
+                                    <h4 className="text-lg lg:text-xl font-bold text-white mb-1">Manage {activeTab}</h4>
+                                    <p className="text-sm text-slate-500 font-medium">Create, update or remove items live.</p>
                                 </div>
                                 <button
                                     onClick={() => { setEditingItem(null); setIsEditing(true); }}
-                                    className="px-6 py-3 bg-primary-600 hover:bg-primary-500 text-white rounded-2xl font-black flex items-center gap-2 transition-all shadow-lg shadow-primary-600/20 active:scale-95"
+                                    className="px-4 lg:px-6 py-3 bg-primary-600 hover:bg-primary-500 text-white rounded-xl lg:rounded-2xl font-black flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary-600/20 active:scale-95"
                                 >
-                                    <Plus size={20} /> Add New Entry
+                                    <Plus size={20} /> Add Entry
                                 </button>
                             </div>
 
@@ -304,12 +342,12 @@ const CRM: React.FC = () => {
                                         <p className="text-slate-500 mb-8 max-w-sm mx-auto font-medium">No records found in this category. Start adding content to see them here.</p>
                                     </div>
                                 ) : (
-                                    <div className="overflow-x-auto rounded-2xi">
-                                        <table className="w-full text-left">
+                                    <div className="overflow-x-auto rounded-2xl scrollbar-hide">
+                                        <table className="w-full text-left min-w-[600px]">
                                             <thead>
                                                 <tr className="border-b border-white/5 uppercase text-[10px] font-black text-slate-500 tracking-[0.2em]">
-                                                    <th className="pb-6 px-4">Item Identity</th>
-                                                    <th className="pb-6 px-4">Classification</th>
+                                                    <th className="pb-6 px-4">Content Details</th>
+                                                    <th className="pb-6 px-4">Category</th>
                                                     <th className="pb-6 px-4 text-right">Actions</th>
                                                 </tr>
                                             </thead>
@@ -318,15 +356,15 @@ const CRM: React.FC = () => {
                                                     (i.title || i.name || '').toLowerCase().includes(searchQuery.toLowerCase())
                                                 ).map((item) => (
                                                     <tr key={item._id} className="group hover:bg-white/[0.02] transition-colors">
-                                                        <td className="py-6 px-4">
-                                                            <div className="flex items-center gap-4">
-                                                                <div className="relative">
-                                                                    <img src={item.image} className="w-14 h-14 rounded-2xl object-cover border border-white/10 group-hover:border-primary-500/50 transition-colors" alt="" />
+                                                        <td className="py-4 lg:py-6 px-4">
+                                                            <div className="flex items-center gap-3 lg:gap-4">
+                                                                <div className="relative flex-shrink-0">
+                                                                    <img src={item.image} className="w-12 h-12 lg:w-14 lg:h-14 rounded-2xl object-cover border border-white/10 group-hover:border-primary-500/50 transition-colors" alt="" />
                                                                     {item.featured && <div className="absolute -top-2 -right-2 w-5 h-5 bg-primary-600 rounded-full flex items-center justify-center border-2 border-slate-900"><TrendingUp size={10} className="text-white" /></div>}
                                                                 </div>
-                                                                <div>
-                                                                    <div className="font-bold text-white text-lg group-hover:text-primary-400 transition-colors">{item.title || item.name}</div>
-                                                                    <div className="text-slate-500 text-sm font-medium line-clamp-1 max-w-xs">{item.excerpt || item.role || item.streamer}</div>
+                                                                <div className="min-w-0">
+                                                                    <div className="font-bold text-white text-base lg:text-lg group-hover:text-primary-400 transition-colors truncate">{item.title || item.name}</div>
+                                                                    <div className="text-slate-500 text-xs lg:text-sm font-medium line-clamp-1 max-w-[200px] lg:max-w-xs">{item.excerpt || item.role || item.streamer}</div>
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -384,151 +422,234 @@ const CRM: React.FC = () => {
                                 </button>
                             </div>
 
-                            <div className="p-10 overflow-y-auto space-y-8 flex-1">
-                                <div className="grid grid-cols-2 gap-8">
-                                    <div className="col-span-2">
-                                        <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Item Title / User Name</label>
-                                        <input
-                                            name="title"
-                                            defaultValue={editingItem?.title || editingItem?.name}
-                                            className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold transition-all hover:bg-white/[0.07]"
-                                            required
-                                        />
+                            <div className="p-6 lg:p-10 overflow-y-auto space-y-10 flex-1 scrollbar-hide">
+                                {/* Section 1: Core Information */}
+                                <div className="space-y-6">
+                                    <div className="flex items-center gap-3 border-b border-white/5 pb-4">
+                                        <Layers className="text-primary-500" size={18} />
+                                        <h4 className="text-sm font-black text-white uppercase tracking-[0.2em]">Core Identity</h4>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="md:col-span-2 group">
+                                            <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em] group-focus-within:text-primary-500 transition-colors">Item Title / Display Name</label>
+                                            <div className="relative">
+                                                <Type className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
+                                                <input
+                                                    name={activeTab === 'blogs' || activeTab === 'streams' || activeTab === 'drops' ? 'title' : 'name'}
+                                                    defaultValue={editingItem?.title || editingItem?.name}
+                                                    placeholder="Enter a compelling name..."
+                                                    className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 focus:bg-white/[0.07] outline-none text-white font-bold transition-all hover:bg-white/[0.05]"
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="md:col-span-2 group">
+                                            <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em] group-focus-within:text-primary-500 transition-colors">Primary Visual Asset (URL)</label>
+                                            <div className="relative">
+                                                <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
+                                                <input
+                                                    name="image"
+                                                    defaultValue={editingItem?.image}
+                                                    placeholder="https://images.unsplash.com/..."
+                                                    className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 focus:bg-white/[0.07] outline-none text-white font-bold transition-all hover:bg-white/[0.05]"
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Section 2: Type Specific Metadata */}
+                                <div className="space-y-6">
+                                    <div className="flex items-center gap-3 border-b border-white/5 pb-4">
+                                        <Award className="text-secondary-500" size={18} />
+                                        <h4 className="text-sm font-black text-white uppercase tracking-[0.2em]">Contextual Details</h4>
                                     </div>
 
-                                    <div className="col-span-2">
-                                        <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Primary Image Asset URL</label>
-                                        <input
-                                            name="image"
-                                            defaultValue={editingItem?.image}
-                                            className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold transition-all hover:bg-white/[0.07]"
-                                            required
-                                        />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                                        {activeTab === 'blogs' && (
+                                            <>
+                                                <div className="md:col-span-2 group">
+                                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Short Summary</label>
+                                                    <textarea name="excerpt" defaultValue={editingItem?.excerpt} placeholder="Describe the content in a few words..." className="w-full px-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none text-white font-bold h-32 resize-none hover:bg-white/[0.05] transition-all" required />
+                                                </div>
+                                                <div className="group">
+                                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Author Name</label>
+                                                    <div className="relative">
+                                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
+                                                        <input name="author.name" defaultValue={editingItem?.author?.name} placeholder="Name" className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none text-white font-bold transition-all" />
+                                                    </div>
+                                                </div>
+                                                <div className="group">
+                                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Author Title</label>
+                                                    <div className="relative">
+                                                        <Award className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
+                                                        <input name="author.role" defaultValue={editingItem?.author?.role} placeholder="e.g. Senior Editor" className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none text-white font-bold transition-all" />
+                                                    </div>
+                                                </div>
+                                                <div className="group">
+                                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Topic Category</label>
+                                                    <div className="relative">
+                                                        <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
+                                                        <input name="category" defaultValue={editingItem?.category} placeholder="Tech, Lifestyle..." className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none text-white font-bold transition-all" />
+                                                    </div>
+                                                </div>
+                                                <div className="group">
+                                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Read Time</label>
+                                                    <div className="relative">
+                                                        <Clock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
+                                                        <input name="readTime" defaultValue={editingItem?.readTime} placeholder="5 min" className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none text-white font-bold transition-all" />
+                                                    </div>
+                                                </div>
+                                                <div className="md:col-span-2 group">
+                                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Metadata Tags</label>
+                                                    <div className="relative">
+                                                        <Tag className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
+                                                        <input name="tags" defaultValue={editingItem?.tags?.join(', ')} placeholder="Comma-separated: fashion, design, live" className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none text-white font-bold transition-all" />
+                                                    </div>
+                                                </div>
+                                                <div className="md:col-span-2 p-1 bg-white/[0.02] border border-white/5 rounded-3xl">
+                                                    <label className="flex items-center gap-4 p-5 hover:bg-white/5 rounded-2xl cursor-pointer transition-all">
+                                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center border-2 transition-all ${editingItem?.featured ? 'bg-primary-600 border-primary-600' : 'border-white/10'}`}>
+                                                            <Award className="text-white" size={20} />
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <p className="text-sm font-black text-white">Promote to Featured</p>
+                                                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Pin this to the top of the feed</p>
+                                                        </div>
+                                                        <input type="checkbox" name="featured" defaultChecked={editingItem?.featured} className="w-6 h-6 accent-primary-600 rounded-lg" />
+                                                    </label>
+                                                </div>
+                                            </>
+                                        )}
+
+                                        {activeTab === 'streams' && (
+                                            <>
+                                                <div className="group">
+                                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Streamer Handle</label>
+                                                    <div className="relative">
+                                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
+                                                        <input name="streamer" defaultValue={editingItem?.streamer} className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none text-white font-bold transition-all" />
+                                                    </div>
+                                                </div>
+                                                <div className="group">
+                                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Live Audience</label>
+                                                    <div className="relative">
+                                                        <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
+                                                        <input name="viewers" defaultValue={editingItem?.viewers} className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none text-white font-bold transition-all" />
+                                                    </div>
+                                                </div>
+                                                <div className="group">
+                                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Genre</label>
+                                                    <div className="relative">
+                                                        <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
+                                                        <input name="category" defaultValue={editingItem?.category} className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none text-white font-bold transition-all" />
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
+
+                                        {activeTab === 'drops' && (
+                                            <>
+                                                <div className="group">
+                                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Official Brand</label>
+                                                    <div className="relative">
+                                                        <Award className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
+                                                        <input name="brand" defaultValue={editingItem?.brand} className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none text-white font-bold transition-all" />
+                                                    </div>
+                                                </div>
+                                                <div className="group">
+                                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Drop Price</label>
+                                                    <div className="relative">
+                                                        <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
+                                                        <input name="price" defaultValue={editingItem?.price} className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none text-white font-bold transition-all" />
+                                                    </div>
+                                                </div>
+                                                <div className="group">
+                                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Launch Date</label>
+                                                    <div className="relative">
+                                                        <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
+                                                        <input name="date" defaultValue={editingItem?.date} className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none text-white font-bold transition-all" />
+                                                    </div>
+                                                </div>
+                                                <div className="group">
+                                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Launch Time</label>
+                                                    <div className="relative">
+                                                        <Clock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
+                                                        <input name="time" defaultValue={editingItem?.time} className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none text-white font-bold transition-all" />
+                                                    </div>
+                                                </div>
+                                                <div className="group">
+                                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Spots Left</label>
+                                                    <div className="relative">
+                                                        <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
+                                                        <input type="number" name="spots" defaultValue={editingItem?.spots} className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none text-white font-bold transition-all" />
+                                                    </div>
+                                                </div>
+                                                <div className="group">
+                                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Total Interest</label>
+                                                    <div className="relative">
+                                                        <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
+                                                        <input type="number" name="interested" defaultValue={editingItem?.interested} className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none text-white font-bold transition-all" />
+                                                    </div>
+                                                </div>
+                                                <div className="md:col-span-2 group">
+                                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Style Profile (Gradient CSS)</label>
+                                                    <div className="relative">
+                                                        <Palette className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
+                                                        <input name="gradient" defaultValue={editingItem?.gradient || 'from-primary-500 to-secondary-500'} className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none text-white font-bold transition-all" />
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
+
+                                        {activeTab === 'testimonials' && (
+                                            <>
+                                                <div className="md:col-span-2 group">
+                                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">User Quote</label>
+                                                    <div className="relative">
+                                                        <Quote className="absolute left-4 top-6 text-slate-500" size={18} />
+                                                        <textarea name="quote" defaultValue={editingItem?.quote} placeholder="What did they say?" className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none text-white font-bold h-32 resize-none transition-all" />
+                                                    </div>
+                                                </div>
+                                                <div className="group">
+                                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Role / Badge</label>
+                                                    <div className="relative">
+                                                        <Award className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
+                                                        <input name="role" defaultValue={editingItem?.role} placeholder="Verified Collector" className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none text-white font-bold transition-all" />
+                                                    </div>
+                                                </div>
+                                                <div className="group">
+                                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Success Metric</label>
+                                                    <div className="relative">
+                                                        <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
+                                                        <input name="stats" defaultValue={editingItem?.stats} placeholder="124 Items Sold" className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 outline-none text-white font-bold transition-all" />
+                                                    </div>
+                                                </div>
+                                                <div className="md:col-span-2 p-1 bg-white/[0.02] border border-white/5 rounded-3xl">
+                                                    <label className="flex items-center gap-4 p-5 hover:bg-white/5 rounded-2xl cursor-pointer transition-all">
+                                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center border-2 transition-all ${editingItem?.featured ? 'bg-secondary-500 border-secondary-500' : 'border-white/10'}`}>
+                                                            <Star className="text-white" size={20} />
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <p className="text-sm font-black text-white">Trust Validation</p>
+                                                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Mark as high-impact testimonial</p>
+                                                        </div>
+                                                        <input type="checkbox" name="featured" defaultChecked={editingItem?.featured} className="w-6 h-6 accent-secondary-500 rounded-lg" />
+                                                    </label>
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
-
-                                    {activeTab === 'blogs' && (
-                                        <>
-                                            <div className="col-span-2">
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Content Short Excerpt</label>
-                                                <textarea name="excerpt" defaultValue={editingItem?.excerpt} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold h-32 resize-none" required />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Author Full Name</label>
-                                                <input name="author.name" defaultValue={editingItem?.author?.name} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Author Image Asset</label>
-                                                <input name="author.image" defaultValue={editingItem?.author?.image} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Author Professional Role</label>
-                                                <input name="author.role" defaultValue={editingItem?.author?.role} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Primary Category</label>
-                                                <input name="category" defaultValue={editingItem?.category} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Estimated Read Time</label>
-                                                <input name="readTime" defaultValue={editingItem?.readTime} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" />
-                                            </div>
-                                            <div className="col-span-2">
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Keywords (comma separated)</label>
-                                                <input name="tags" defaultValue={editingItem?.tags?.join(', ')} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" placeholder="E-commerce, Live, Tech" />
-                                            </div>
-                                            <div className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
-                                                <input type="checkbox" name="featured" id="feat" defaultChecked={editingItem?.featured} className="w-6 h-6 accent-primary-600 rounded-lg" />
-                                                <label htmlFor="feat" className="text-sm font-black text-slate-300 uppercase tracking-widest cursor-pointer">Promote as Featured Content</label>
-                                            </div>
-                                        </>
-                                    )}
-
-                                    {activeTab === 'streams' && (
-                                        <>
-                                            <div>
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Streamer Handle</label>
-                                                <input name="streamer" defaultValue={editingItem?.streamer} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Active Viewer Count</label>
-                                                <input name="viewers" defaultValue={editingItem?.viewers} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Streaming Category</label>
-                                                <input name="category" defaultValue={editingItem?.category} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" />
-                                            </div>
-                                        </>
-                                    )}
-
-                                    {activeTab === 'drops' && (
-                                        <>
-                                            <div>
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Brand Identity</label>
-                                                <input name="brand" defaultValue={editingItem?.brand} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Promotional Price</label>
-                                                <input name="price" defaultValue={editingItem?.price} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Original List Price</label>
-                                                <input name="originalPrice" defaultValue={editingItem?.originalPrice} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Event Launch Date</label>
-                                                <input name="date" defaultValue={editingItem?.date} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Scheduled Start Time</label>
-                                                <input name="time" defaultValue={editingItem?.time} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Limited Availability (Spots)</label>
-                                                <input type="number" name="spots" defaultValue={editingItem?.spots} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Wishlist / Interested Users</label>
-                                                <input type="number" name="interested" defaultValue={editingItem?.interested} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Accent Color Gradient</label>
-                                                <input name="gradient" defaultValue={editingItem?.gradient || 'from-primary-500 to-secondary-500'} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" />
-                                            </div>
-                                        </>
-                                    )}
-
-                                    {activeTab === 'testimonials' && (
-                                        <>
-                                            <div className="col-span-2">
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Public Testimonial / Quote</label>
-                                                <textarea name="quote" defaultValue={editingItem?.quote} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold h-32 resize-none" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Professional Designation</label>
-                                                <input name="role" defaultValue={editingItem?.role} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Metric / Success Stat</label>
-                                                <input name="stats" defaultValue={editingItem?.stats} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-[0.2em]">Background Decoration</label>
-                                                <input name="gradient" defaultValue={editingItem?.gradient || 'from-primary-500 to-secondary-500'} className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none text-white font-bold" />
-                                            </div>
-                                            <div className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
-                                                <input type="checkbox" name="featured" id="feat-test" defaultChecked={editingItem?.featured} className="w-6 h-6 accent-primary-600 rounded-lg" />
-                                                <label htmlFor="feat-test" className="text-sm font-black text-slate-300 uppercase tracking-widest cursor-pointer">Promote as Key Testimonial</label>
-                                            </div>
-                                        </>
-                                    )}
                                 </div>
                             </div>
 
-                            <div className="p-8 border-t border-white/5 flex justify-end gap-3 bg-white/[0.02]">
-                                <button type="button" onClick={() => setIsEditing(false)} className="px-8 py-3.5 rounded-2xl font-black text-slate-400 hover:bg-white/5 transition-all transition-all uppercase text-[10px] tracking-widest border border-white/10">
+                            <div className="p-6 lg:p-8 border-t border-white/5 flex flex-col sm:flex-row justify-end gap-3 bg-white/[0.02]">
+                                <button type="button" onClick={() => setIsEditing(false)} className="w-full sm:w-auto px-8 py-3.5 rounded-2xl font-black text-slate-400 hover:bg-white/5 transition-all uppercase text-[10px] tracking-widest border border-white/10">
                                     Discard Changes
                                 </button>
-                                <button type="submit" className="px-10 py-3.5 bg-primary-600 hover:bg-primary-500 rounded-2xl font-black text-white transition-all shadow-xl shadow-primary-600/20 active:scale-95 uppercase text-[10px] tracking-widest flex items-center gap-2">
+                                <button type="submit" className="w-full sm:w-auto px-10 py-3.5 bg-primary-600 hover:bg-primary-500 rounded-2xl font-black text-white transition-all shadow-xl shadow-primary-600/20 active:scale-95 uppercase text-[10px] tracking-widest flex items-center justify-center gap-2">
                                     <Save size={16} /> {editingItem ? 'Publish Updates' : 'Publish to MongoDB'}
                                 </button>
                             </div>

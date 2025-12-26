@@ -7,7 +7,6 @@ const navItems: NavItem[] = [
   { label: 'Home', path: '/' },
   { label: 'Blog', path: '/blog' },
   { label: 'About', path: '/about' },
-  { label: 'Admin', path: '/crm' },
 ];
 
 const Navbar: React.FC = () => {

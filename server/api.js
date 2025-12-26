@@ -13,6 +13,7 @@ const setupCrud = (route, model) => {
       const items = await model.find().sort({ createdAt: -1 });
       res.json(items);
     } catch (err) {
+      console.error(`❌ Error fetching ${route}:`, err);
       res.status(500).json({ error: err.message });
     }
   });
