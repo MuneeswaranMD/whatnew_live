@@ -225,17 +225,17 @@ const CRM: React.FC = () => {
 
             {/* Sidebar */}
             <aside className={`
-                w-72 bg-slate-900/50 border-r border-white/5 backdrop-blur-2xl flex flex-col fixed lg:sticky top-0 h-screen z-50 transition-transform duration-300
+                w-72 bg-slate-900/80 border-r border-white/10 backdrop-blur-3xl flex flex-col fixed lg:relative lg:sticky left-0 top-0 h-screen z-50 transition-transform duration-300
                 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
             `}>
-                <div className="p-8">
-                    <div className="flex items-center gap-3 mb-10">
-                        <div className="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-600/20">
+                <div className="p-8 h-full flex flex-col overflow-y-auto scrollbar-hide">
+                    <div className="flex items-center gap-4 mb-12">
+                        <div className="w-11 h-11 bg-primary-600 rounded-2xl flex items-center justify-center shadow-xl shadow-primary-600/30 ring-1 ring-white/10">
                             <LayoutDashboard className="text-white" size={24} />
                         </div>
-                        <div>
-                            <h1 className="text-xl font-black text-white leading-none">WhatNew</h1>
-                            <span className="text-[10px] font-bold text-primary-500 uppercase tracking-[0.2em]">Command Center</span>
+                        <div className="flex flex-col">
+                            <h1 className="text-xl font-black text-white tracking-tight leading-none">WhatNew</h1>
+                            <span className="text-[9px] font-black text-primary-500 uppercase tracking-[0.3em] mt-1.5 opacity-80">System Hub</span>
                         </div>
                     </div>
 
@@ -289,9 +289,9 @@ const CRM: React.FC = () => {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 flex flex-col min-w-0 w-full overflow-x-hidden">
+            <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
                 {/* Top Header */}
-                <header className="h-20 border-b border-white/5 bg-slate-900/20 backdrop-blur-md flex items-center justify-between px-4 lg:px-10 sticky top-0 z-30">
+                <header className="h-20 flex-shrink-0 border-b border-white/5 bg-slate-950/40 backdrop-blur-2xl flex items-center justify-between px-6 lg:px-10 z-30">
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => setIsSidebarOpen(true)}
@@ -330,12 +330,15 @@ const CRM: React.FC = () => {
                     </div>
                 </header>
 
-                <div className="p-4 lg:p-10 overflow-y-auto w-full overflow-x-hidden">
+                <div className="flex-1 p-6 lg:p-10 overflow-y-auto scrollbar-hide overflow-x-hidden">
                     {/* Welcome Section */}
                     <Reveal animation="fade-right">
-                        <div className="mb-10">
-                            <h3 className="text-3xl font-black text-white mb-2">Welcome Back, Admin</h3>
-                            <p className="text-slate-400">Here's what's happening with WhatNew today.</p>
+                        <div className="mb-12">
+                            <h3 className="text-3xl lg:text-4xl font-black text-white mb-2 tracking-tight">System Overview</h3>
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></div>
+                                <p className="text-slate-400 font-bold text-sm uppercase tracking-widest opacity-60">Admin Terminal / Access Granted</p>
+                            </div>
                         </div>
                     </Reveal>
 
@@ -528,7 +531,7 @@ const CRM: React.FC = () => {
                             <div
                                 ref={scrollRef}
                                 onScroll={handleScroll}
-                                className="p-6 lg:p-10 overflow-y-auto space-y-12 flex-1 custom-scrollbar scroll-smooth bg-gradient-to-b from-transparent via-white/[0.01] to-transparent"
+                                className="p-6 lg:p-10 overflow-y-auto space-y-12 flex-1 scrollbar-hide scroll-smooth bg-gradient-to-b from-transparent via-white/[0.01] to-transparent"
                             >
                                 {/* Section 1: Core Identity */}
                                 <div className="space-y-8">
@@ -849,7 +852,7 @@ const CRM: React.FC = () => {
                             </div>
                             <div>
                                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Message</p>
-                                <div className="p-6 bg-white/5 rounded-2xl border border-white/5 text-slate-300 font-medium leading-relaxed whitespace-pre-wrap max-h-60 overflow-y-auto custom-scrollbar">
+                                <div className="p-6 bg-white/5 rounded-2xl border border-white/5 text-slate-300 font-medium leading-relaxed whitespace-pre-wrap max-h-60 overflow-y-auto scrollbar-hide">
                                     {selectedEnquiry.message}
                                 </div>
                             </div>
