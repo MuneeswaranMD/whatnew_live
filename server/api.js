@@ -1,5 +1,5 @@
 import express from 'express';
-import { BlogPost, LiveStream, Drop, Testimonial } from './models.js';
+import { BlogPost, LiveStream, Drop, Testimonial, Enquiry } from './models.js';
 
 const router = express.Router();
 
@@ -64,5 +64,6 @@ setupCrud('blogs', BlogPost);
 setupCrud('streams', LiveStream);
 setupCrud('drops', Drop);
 setupCrud('testimonials', Testimonial);
+setupCrud('enquiries', Enquiry);
 
 export default router;

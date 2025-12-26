@@ -101,6 +101,17 @@ export const contentService = {
         }
     },
 
+    getEnquiries: async (): Promise<any[]> => {
+        try {
+            const res = await fetch(`${API_BASE}/enquiries`);
+            if (!res.ok) throw new Error('Fetch failed');
+            return await res.json();
+        } catch (error) {
+            console.error('API Error:', error);
+            return [];
+        }
+    },
+
     // CRUD Operations for CRM
     create: async (type: string, data: any) => {
         const res = await fetch(`${API_BASE}/${type}`, {

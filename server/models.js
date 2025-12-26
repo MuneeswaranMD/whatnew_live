@@ -50,7 +50,17 @@ const testimonialSchema = new mongoose.Schema({
   featured: { type: Boolean, default: false },
 }, { timestamps: true });
 
+const enquirySchema = new mongoose.Schema({
+  firstName: String,
+  lastName: String,
+  email: String,
+  topic: String,
+  message: String,
+  status: { type: String, default: 'new' }
+}, { timestamps: true });
+
 export const BlogPost = mongoose.model('BlogPost', blogPostSchema);
 export const LiveStream = mongoose.model('LiveStream', liveStreamSchema);
 export const Drop = mongoose.model('Drop', dropSchema);
 export const Testimonial = mongoose.model('Testimonial', testimonialSchema);
+export const Enquiry = mongoose.model('Enquiry', enquirySchema);

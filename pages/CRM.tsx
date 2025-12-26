@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     BarChart3,
     LayoutDashboard,
@@ -36,7 +36,11 @@ import {
     Palette,
     Layers,
     Quote,
-    Star
+    ChevronDown,
+    Star,
+    Download,
+    Inbox,
+    Eye
 } from 'lucide-react';
 import { auth } from '../src/firebase';
 import { signOut } from 'firebase/auth';
@@ -44,7 +48,7 @@ import Reveal from '../components/Reveal';
 import { contentService, BlogPost, LiveStream, Drop, Testimonial } from '../services/contentService';
 import { Link } from 'react-router-dom';
 
-type TabType = 'blogs' | 'streams' | 'drops' | 'testimonials';
+type TabType = 'blogs' | 'streams' | 'drops' | 'testimonials' | 'enquiries';
 
 const CRM: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabType>('blogs');
@@ -55,12 +59,40 @@ const CRM: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+    const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
+    const [tempImageUrl, setTempImageUrl] = useState('');
+    const [selectedEnquiry, setSelectedEnquiry] = useState<any>(null);
+    const scrollRef = useRef<HTMLDivElement>(null);
+
+    const handleScroll = () => {
+        if (scrollRef.current) {
+            const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+            if (scrollHeight - scrollTop - clientHeight < 50) {
+                setHasScrolledToBottom(true);
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (isEditing) {
+            setHasScrolledToBottom(false);
+            setTempImageUrl(editingItem?.image || '');
+            const timer = setTimeout(() => {
+                if (scrollRef.current) {
+                    const isScrollable = scrollRef.current.scrollHeight > scrollRef.current.clientHeight;
+                    if (!isScrollable) setHasScrolledToBottom(true);
+                }
+            }, 400);
+            return () => clearTimeout(timer);
+        }
+    }, [isEditing, activeTab, editingItem]);
 
     const tabs = [
         { id: 'blogs', label: 'Blog Posts', icon: <FileText size={20} />, color: 'bg-blue-500' },
         { id: 'streams', label: 'Live Streams', icon: <Video size={20} />, color: 'bg-purple-500' },
         { id: 'drops', label: 'Upcoming Drops', icon: <ShoppingBag size={20} />, color: 'bg-orange-500' },
         { id: 'testimonials', label: 'Testimonials', icon: <MessageSquare size={20} />, color: 'bg-emerald-500' },
+        { id: 'enquiries', label: 'Enquiries', icon: <Inbox size={20} />, color: 'bg-rose-500' },
     ];
 
     const stats = [
@@ -79,6 +111,7 @@ const CRM: React.FC = () => {
                 case 'streams': data = await contentService.getTrendingStreams(); break;
                 case 'drops': data = await contentService.getUpcomingDrops(); break;
                 case 'testimonials': data = await contentService.getTestimonials(); break;
+                case 'enquiries': data = await contentService.getEnquiries(); break;
             }
             setItems(data);
         } catch (err) {
@@ -107,6 +140,34 @@ const CRM: React.FC = () => {
         } catch (err) {
             showMessage('Delete failed', 'error');
         }
+    };
+
+    const downloadExcel = () => {
+        if (items.length === 0) return;
+
+        const headers = ['First Name', 'Last Name', 'Email', 'Topic', 'Message', 'Status', 'Date'];
+        const csvContent = [
+            headers.join(','),
+            ...items.map(item => [
+                `"${item.firstName || ''}"`,
+                `"${item.lastName || ''}"`,
+                `"${item.email || ''}"`,
+                `"${item.topic || ''}"`,
+                `"${item.message?.replace(/"/g, '""') || ''}"`,
+                `"${item.status || ''}"`,
+                `"${new Date(item.createdAt).toLocaleDateString()}"`
+            ].join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `enquiries_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -308,12 +369,22 @@ const CRM: React.FC = () => {
                                     <h4 className="text-lg lg:text-xl font-bold text-white mb-1">Manage {activeTab}</h4>
                                     <p className="text-sm text-slate-500 font-medium">Create, update or remove items live.</p>
                                 </div>
-                                <button
-                                    onClick={() => { setEditingItem(null); setIsEditing(true); }}
-                                    className="px-4 lg:px-6 py-3 bg-primary-600 hover:bg-primary-500 text-white rounded-xl lg:rounded-2xl font-black flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary-600/20 active:scale-95"
-                                >
-                                    <Plus size={20} /> Add Entry
-                                </button>
+                                {activeTab !== 'enquiries' && (
+                                    <button
+                                        onClick={() => { setEditingItem(null); setIsEditing(true); }}
+                                        className="px-4 lg:px-6 py-3 bg-primary-600 hover:bg-primary-500 text-white rounded-xl lg:rounded-2xl font-black flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary-600/20 active:scale-95"
+                                    >
+                                        <Plus size={20} /> Add Entry
+                                    </button>
+                                )}
+                                {activeTab === 'enquiries' && (
+                                    <button
+                                        onClick={downloadExcel}
+                                        className="px-4 lg:px-6 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl lg:rounded-2xl font-black flex items-center justify-center gap-2 transition-all border border-white/10 active:scale-95"
+                                    >
+                                        <Download size={20} /> Export CSV
+                                    </button>
+                                )}
                             </div>
 
                             {/* Alert Messages */}
@@ -346,41 +417,69 @@ const CRM: React.FC = () => {
                                         <table className="w-full text-left min-w-[600px]">
                                             <thead>
                                                 <tr className="border-b border-white/5 uppercase text-[10px] font-black text-slate-500 tracking-[0.2em]">
-                                                    <th className="pb-6 px-4">Content Details</th>
-                                                    <th className="pb-6 px-4">Category</th>
+                                                    <th className="pb-6 px-4">
+                                                        {activeTab === 'enquiries' ? 'Sender Details' : 'Content Details'}
+                                                    </th>
+                                                    <th className="pb-6 px-4">
+                                                        {activeTab === 'enquiries' ? 'Topic' : 'Category'}
+                                                    </th>
                                                     <th className="pb-6 px-4 text-right">Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-white/5">
                                                 {items.filter(i =>
-                                                    (i.title || i.name || '').toLowerCase().includes(searchQuery.toLowerCase())
+                                                    (i.title || i.name || i.firstName || i.lastName || '').toLowerCase().includes(searchQuery.toLowerCase())
                                                 ).map((item) => (
                                                     <tr key={item._id} className="group hover:bg-white/[0.02] transition-colors">
                                                         <td className="py-4 lg:py-6 px-4">
                                                             <div className="flex items-center gap-3 lg:gap-4">
-                                                                <div className="relative flex-shrink-0">
-                                                                    <img src={item.image} className="w-12 h-12 lg:w-14 lg:h-14 rounded-2xl object-cover border border-white/10 group-hover:border-primary-500/50 transition-colors" alt="" />
-                                                                    {item.featured && <div className="absolute -top-2 -right-2 w-5 h-5 bg-primary-600 rounded-full flex items-center justify-center border-2 border-slate-900"><TrendingUp size={10} className="text-white" /></div>}
-                                                                </div>
-                                                                <div className="min-w-0">
-                                                                    <div className="font-bold text-white text-base lg:text-lg group-hover:text-primary-400 transition-colors truncate">{item.title || item.name}</div>
-                                                                    <div className="text-slate-500 text-xs lg:text-sm font-medium line-clamp-1 max-w-[200px] lg:max-w-xs">{item.excerpt || item.role || item.streamer}</div>
-                                                                </div>
+                                                                {activeTab !== 'enquiries' ? (
+                                                                    <>
+                                                                        <div className="relative flex-shrink-0">
+                                                                            <img src={item.image} className="w-12 h-12 lg:w-14 lg:h-14 rounded-2xl object-cover border border-white/10 group-hover:border-primary-500/50 transition-colors" alt="" />
+                                                                            {item.featured && <div className="absolute -top-2 -right-2 w-5 h-5 bg-primary-600 rounded-full flex items-center justify-center border-2 border-slate-900"><TrendingUp size={10} className="text-white" /></div>}
+                                                                        </div>
+                                                                        <div className="min-w-0">
+                                                                            <div className="font-bold text-white text-base lg:text-lg group-hover:text-primary-400 transition-colors truncate">{item.title || item.name}</div>
+                                                                            <div className="text-slate-500 text-xs lg:text-sm font-medium line-clamp-1 max-w-[200px] lg:max-w-xs">{item.excerpt || item.role || item.streamer}</div>
+                                                                        </div>
+                                                                    </>
+                                                                ) : (
+                                                                    <div className="flex items-center gap-3">
+                                                                        <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 font-black text-lg uppercase flex-shrink-0">
+                                                                            {item.firstName?.[0]}{item.lastName?.[0]}
+                                                                        </div>
+                                                                        <div>
+                                                                            <div className="font-bold text-white text-base group-hover:text-rose-400 transition-colors">{item.firstName} {item.lastName}</div>
+                                                                            <div className="text-slate-500 text-xs font-medium">{item.email}</div>
+                                                                        </div>
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </td>
                                                         <td className="py-6 px-4">
-                                                            <span className="px-3 py-1.5 bg-white/5 rounded-xl text-[10px] font-black uppercase text-slate-400 border border-white/5 tracking-wider">
-                                                                {item.category || item.brand || 'Personal'}
+                                                            <span className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border tracking-wider ${activeTab === 'enquiries' ? 'bg-rose-500/5 text-rose-400 border-rose-500/10' : 'bg-white/5 text-slate-400 border-white/5'}`}>
+                                                                {item.topic || item.category || item.brand || 'Personal'}
                                                             </span>
                                                         </td>
                                                         <td className="py-6 px-4 text-right">
                                                             <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
-                                                                <button
-                                                                    onClick={() => { setEditingItem(item); setIsEditing(true); }}
-                                                                    className="w-10 h-10 bg-white/5 hover:bg-primary-600 text-slate-400 hover:text-white rounded-xl flex items-center justify-center transition-all border border-white/10"
-                                                                >
-                                                                    <Edit3 size={18} />
-                                                                </button>
+                                                                {activeTab === 'enquiries' && (
+                                                                    <button
+                                                                        onClick={() => setSelectedEnquiry(item)}
+                                                                        className="w-10 h-10 bg-white/5 hover:bg-rose-600 text-slate-400 hover:text-white rounded-xl flex items-center justify-center transition-all border border-white/10"
+                                                                    >
+                                                                        <Eye size={18} />
+                                                                    </button>
+                                                                )}
+                                                                {activeTab !== 'enquiries' && (
+                                                                    <button
+                                                                        onClick={() => { setEditingItem(item); setIsEditing(true); }}
+                                                                        className="w-10 h-10 bg-white/5 hover:bg-primary-600 text-slate-400 hover:text-white rounded-xl flex items-center justify-center transition-all border border-white/10"
+                                                                    >
+                                                                        <Edit3 size={18} />
+                                                                    </button>
+                                                                )}
                                                                 <button
                                                                     onClick={() => handleDelete(item._id)}
                                                                     className="w-10 h-10 bg-white/5 hover:bg-red-600 text-slate-400 hover:text-white rounded-xl flex items-center justify-center transition-all border border-white/10"
@@ -403,11 +502,15 @@ const CRM: React.FC = () => {
 
             {/* Editor Modal */}
             {isEditing && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-2 sm:p-4 md:p-6 lg:p-10">
-                    <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-2xl" onClick={() => setIsEditing(false)}></div>
-                    <Reveal animation="zoom-in" className="relative w-full max-w-3xl bg-slate-900 border border-white/10 rounded-[24px] md:rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[98vh] md:max-h-[90vh]">
-                        <form onSubmit={handleSubmit} className="flex flex-col h-full">
-                            <div className="p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={() => setIsEditing(false)}></div>
+                    <Reveal animation="zoom-in" className="relative w-full max-w-2xl bg-slate-900/90 border border-white/10 rounded-[40px] shadow-[0_0_100px_-20px_rgba(37,99,235,0.3)] backdrop-blur-3xl overflow-hidden flex flex-col max-h-[92vh]">
+                        <form onSubmit={handleSubmit} className="flex flex-col h-full overflow-hidden">
+                            <div className="p-8 border-b border-white/10 flex items-center justify-between bg-white/[0.02] relative">
+                                <div
+                                    className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-primary-600 via-secondary-500 to-primary-600 transition-all duration-1000 ease-out"
+                                    style={{ width: hasScrolledToBottom ? '100%' : '0%' }}
+                                />
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 bg-primary-600/10 rounded-2xl flex items-center justify-center text-primary-500">
                                         <Edit3 size={24} />
@@ -422,39 +525,75 @@ const CRM: React.FC = () => {
                                 </button>
                             </div>
 
-                            <div className="p-6 lg:p-10 overflow-y-auto space-y-10 flex-1 custom-scrollbar">
-                                {/* Section 1: Core Information */}
-                                <div className="space-y-6">
-                                    <div className="flex items-center gap-3 border-b border-white/5 pb-4">
-                                        <Layers className="text-primary-500" size={18} />
-                                        <h4 className="text-sm font-black text-white uppercase tracking-[0.2em]">Core Identity</h4>
+                            <div
+                                ref={scrollRef}
+                                onScroll={handleScroll}
+                                className="p-6 lg:p-10 overflow-y-auto space-y-12 flex-1 custom-scrollbar scroll-smooth bg-gradient-to-b from-transparent via-white/[0.01] to-transparent"
+                            >
+                                {/* Section 1: Core Identity */}
+                                <div className="space-y-8">
+                                    <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 bg-primary-500/10 rounded-lg flex items-center justify-center text-primary-500">
+                                                <Layers size={18} />
+                                            </div>
+                                            <h4 className="text-sm font-black text-white uppercase tracking-[0.2em]">Core Identity</h4>
+                                        </div>
+                                        <div className="px-3 py-1 bg-white/5 rounded-full border border-white/5">
+                                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none">Step 01 / View Identity</span>
+                                        </div>
                                     </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="md:col-span-2 group">
-                                            <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em] group-focus-within:text-primary-500 transition-colors">Item Title / Display Name</label>
-                                            <div className="relative">
-                                                <Type className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
-                                                <input
-                                                    name={activeTab === 'blogs' || activeTab === 'streams' || activeTab === 'drops' ? 'title' : 'name'}
-                                                    defaultValue={editingItem?.title || editingItem?.name}
-                                                    placeholder="Enter a compelling name..."
-                                                    className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 focus:bg-white/[0.07] outline-none text-white font-bold transition-all hover:bg-white/[0.05]"
-                                                    required
-                                                />
+
+                                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                                        <div className="lg:col-span-7 space-y-6">
+                                            <div className="group relative">
+                                                <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em] group-focus-within:text-primary-400 transition-colors">Item Title / Display Name</label>
+                                                <div className="relative">
+                                                    <Type className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-400 transition-colors" size={20} />
+                                                    <input
+                                                        name={activeTab === 'blogs' || activeTab === 'streams' || activeTab === 'drops' ? 'title' : 'name'}
+                                                        defaultValue={editingItem?.title || editingItem?.name}
+                                                        placeholder="Enter a compelling name..."
+                                                        className="w-full pl-12 pr-6 py-4 bg-white/[0.04] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 focus:bg-white/[0.08] outline-none text-white font-bold transition-all hover:bg-white/[0.06]"
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="group relative">
+                                                <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em] group-focus-within:text-primary-400 transition-colors">Primary Visual Asset (URL)</label>
+                                                <div className="relative">
+                                                    <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-400 transition-colors" size={20} />
+                                                    <input
+                                                        name="image"
+                                                        defaultValue={editingItem?.image}
+                                                        onChange={(e) => setTempImageUrl(e.target.value)}
+                                                        placeholder="https://images.unsplash.com/..."
+                                                        className="w-full pl-12 pr-6 py-4 bg-white/[0.04] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 focus:bg-white/[0.08] outline-none text-white font-bold transition-all hover:bg-white/[0.06]"
+                                                        required
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <div className="md:col-span-2 group">
-                                            <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-[0.2em] group-focus-within:text-primary-500 transition-colors">Primary Visual Asset (URL)</label>
-                                            <div className="relative">
-                                                <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary-500 transition-colors" size={18} />
-                                                <input
-                                                    name="image"
-                                                    defaultValue={editingItem?.image}
-                                                    placeholder="https://images.unsplash.com/..."
-                                                    className="w-full pl-12 pr-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl focus:ring-2 focus:ring-primary-500/50 focus:bg-white/[0.07] outline-none text-white font-bold transition-all hover:bg-white/[0.05]"
-                                                    required
-                                                />
+                                        <div className="lg:col-span-5 h-full">
+                                            <div className="aspect-[4/3] lg:aspect-square rounded-3xl bg-white/[0.02] border border-dashed border-white/10 flex flex-col items-center justify-center p-2 relative group overflow-hidden shadow-inner">
+                                                {tempImageUrl ? (
+                                                    <img src={tempImageUrl} className="w-full h-full object-cover rounded-2xl border border-white/5 transition-transform duration-700 group-hover:scale-110" alt="Preview" />
+                                                ) : (
+                                                    <div className="text-center p-6">
+                                                        <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-slate-600 mx-auto mb-4 border border-white/5">
+                                                            <ImageIcon size={32} />
+                                                        </div>
+                                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Visual Preview</p>
+                                                        <p className="text-[8px] font-medium text-slate-600 mt-1 uppercase tracking-widest">Awaiting valid source</p>
+                                                    </div>
+                                                )}
+                                                <div className="absolute top-2 right-2 flex gap-1">
+                                                    <div className="px-2 py-1 bg-slate-900/80 backdrop-blur-md rounded-lg border border-white/10 text-[8px] font-black text-white uppercase tracking-widest">
+                                                        {activeTab.slice(0, -1)}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -646,15 +785,86 @@ const CRM: React.FC = () => {
                                 <div className="h-20 lg:h-0"></div> {/* Bottom spacer for better scroll clearance */}
                             </div>
 
-                            <div className="p-6 lg:p-8 border-t border-white/5 flex flex-col sm:flex-row justify-end gap-3 bg-white/[0.02]">
-                                <button type="button" onClick={() => setIsEditing(false)} className="w-full sm:w-auto px-8 py-3.5 rounded-2xl font-black text-slate-400 hover:bg-white/5 transition-all uppercase text-[10px] tracking-widest border border-white/10">
-                                    Discard Changes
-                                </button>
-                                <button type="submit" className="w-full sm:w-auto px-10 py-3.5 bg-primary-600 hover:bg-primary-500 rounded-2xl font-black text-white transition-all shadow-xl shadow-primary-600/20 active:scale-95 uppercase text-[10px] tracking-widest flex items-center justify-center gap-2">
-                                    <Save size={16} /> {editingItem ? 'Publish Updates' : 'Publish to MongoDB'}
-                                </button>
+                            <div className="p-6 lg:p-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-900/40 backdrop-blur-3xl">
+                                <div className="hidden sm:flex flex-1 items-center gap-3">
+                                    {!hasScrolledToBottom ? (
+                                        <div className="flex items-center gap-2 text-primary-400">
+                                            <ChevronDown size={18} className="animate-bounce" />
+                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70">Scroll to unlock submission</span>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-2 text-emerald-400 animate-pulse">
+                                            <CheckCircle2 size={18} />
+                                            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Identity Ready</span>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex items-center gap-3 w-full sm:w-auto">
+                                    <button type="button" onClick={() => setIsEditing(false)} className="px-6 py-3 rounded-xl font-bold text-slate-400 hover:bg-white/5 transition-all text-xs border border-white/5">
+                                        Discard
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={!hasScrolledToBottom}
+                                        className={`px-10 py-3.5 rounded-2xl font-black text-white transition-all uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 
+                                            ${hasScrolledToBottom
+                                                ? 'bg-primary-600 hover:bg-primary-500 shadow-xl shadow-primary-600/20 active:scale-95 cursor-pointer opacity-100'
+                                                : 'bg-slate-800/50 text-slate-600 cursor-not-allowed opacity-50'}`}
+                                    >
+                                        <Save size={16} /> {editingItem ? 'Publish Updates' : 'Publish Entry'}
+                                    </button>
+                                </div>
                             </div>
                         </form>
+                    </Reveal>
+                </div>
+            )}
+
+            {/* View Enquiry Modal */}
+            {selectedEnquiry && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={() => setSelectedEnquiry(null)}></div>
+                    <Reveal animation="zoom-in" className="relative w-full max-w-lg bg-slate-900 border border-white/10 rounded-[32px] shadow-2xl overflow-hidden p-8">
+                        <div className="flex justify-between items-start mb-8">
+                            <div className="flex items-center gap-4">
+                                <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 text-xl font-black uppercase">
+                                    {selectedEnquiry.firstName[0]}{selectedEnquiry.lastName[0]}
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-white">{selectedEnquiry.firstName} {selectedEnquiry.lastName}</h3>
+                                    <p className="text-slate-500 text-sm">{selectedEnquiry.email}</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setSelectedEnquiry(null)} className="p-2 hover:bg-white/5 rounded-xl transition-all">
+                                <X size={20} className="text-slate-400" />
+                            </button>
+                        </div>
+
+                        <div className="space-y-6">
+                            <div>
+                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Subject / Topic</p>
+                                <div className="p-4 bg-white/5 rounded-2xl border border-white/5 text-white font-bold">
+                                    {selectedEnquiry.topic}
+                                </div>
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Message</p>
+                                <div className="p-6 bg-white/5 rounded-2xl border border-white/5 text-slate-300 font-medium leading-relaxed whitespace-pre-wrap max-h-60 overflow-y-auto custom-scrollbar">
+                                    {selectedEnquiry.message}
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between text-[10px] font-black text-slate-500 uppercase tracking-widest pt-4 border-t border-white/5">
+                                <span>Received on</span>
+                                <span className="text-slate-400">{new Date(selectedEnquiry.createdAt).toLocaleDateString()} at {new Date(selectedEnquiry.createdAt).toLocaleTimeString()}</span>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={() => setSelectedEnquiry(null)}
+                            className="w-full mt-8 py-4 bg-white/5 hover:bg-white/10 text-white font-black rounded-2xl transition-all border border-white/10 uppercase text-xs tracking-widest"
+                        >
+                            Close Entry
+                        </button>
                     </Reveal>
                 </div>
             )}

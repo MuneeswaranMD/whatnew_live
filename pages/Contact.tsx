@@ -1,26 +1,96 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Smartphone, Monitor, User, Mail, FileText, HelpCircle } from 'lucide-react';
+import { ChevronRight, Smartphone, Monitor, User, Mail, FileText, HelpCircle, MoreVertical, Globe, Shield, Info, CheckCircle2, AlertCircle } from 'lucide-react';
+import { contentService } from '../services/contentService';
 import Reveal from '../components/Reveal';
 
 const Contact: React.FC = () => {
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [status, setStatus] = React.useState<{ text: string; type: 'success' | 'error' } | null>(null);
+    const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        setStatus(null);
+
+        const formData = new FormData(e.currentTarget);
+        const data = {
+            firstName: formData.get('firstName'),
+            lastName: formData.get('lastName'),
+            email: formData.get('email'),
+            topic: formData.get('topic'),
+            message: formData.get('message'),
+        };
+
+        try {
+            await contentService.create('enquiries', data);
+            setStatus({ text: 'Message sent successfully! We will get back to you soon.', type: 'success' });
+            (e.target as HTMLFormElement).reset();
+        } catch (err) {
+            setStatus({ text: 'Failed to send message. Please try again.', type: 'error' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-slate-50">
             {/* Hero Header */}
             <div className="bg-slate-900 text-white pt-24 pb-20 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-primary-600 rounded-full mix-blend-multiply filter blur-[100px] opacity-20"></div>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <Reveal>
-                        <div className="flex items-center text-sm text-primary-200 mb-4">
-                            <Link to="/" className="hover:text-white transition-colors">WhatNew</Link>
-                            <ChevronRight size={14} className="mx-2" />
-                            <span>Help Center</span>
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <div className="flex items-center text-sm text-primary-200 mb-4">
+                                <Link to="/" className="hover:text-white transition-colors">WhatNew</Link>
+                                <ChevronRight size={14} className="mx-2" />
+                                <span>Help Center</span>
+                            </div>
+                            <h1 className="text-4xl md:text-5xl font-black text-white mb-4">Contact Support</h1>
+                            <p className="text-xl text-slate-300">
+                                We're here to help with your orders, account, and more.
+                            </p>
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-black text-white mb-4">Contact Support</h1>
-                        <p className="text-xl text-slate-300">
-                            We're here to help with your orders, account, and more.
-                        </p>
-                    </Reveal>
+
+                        {/* More Menu */}
+                        <div className="relative">
+                            <button
+                                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                className="p-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all border border-white/10 group"
+                            >
+                                <MoreVertical size={24} className="text-white group-hover:rotate-90 transition-transform duration-300" />
+                            </button>
+
+                            {isMenuOpen && (
+                                <div className="absolute right-0 mt-3 w-64 bg-slate-900 border border-white/10 rounded-2xl shadow-2xl z-[100] overflow-hidden backdrop-blur-xl">
+                                    <div className="p-2 space-y-1">
+                                        <button className="w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all text-left">
+                                            <Globe size={18} />
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-sm">International Support</span>
+                                                <span className="text-[10px] text-slate-500 uppercase tracking-widest">Global regions</span>
+                                            </div>
+                                        </button>
+                                        <button className="w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all text-left">
+                                            <Shield size={18} />
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-sm">Privacy Policy</span>
+                                                <span className="text-[10px] text-slate-500 uppercase tracking-widest">Data protection</span>
+                                            </div>
+                                        </button>
+                                        <button className="w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all text-left">
+                                            <Info size={18} />
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-sm">System Status</span>
+                                                <span className="text-[10px] text-slate-500 uppercase tracking-widest">Live updates</span>
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -42,24 +112,30 @@ const Contact: React.FC = () => {
                                         Fill out the form below and our support team will get back to you within 24 hours.
                                     </p>
 
-                                    <form className="space-y-6">
+                                    <form onSubmit={handleSubmit} className="space-y-6">
+                                        {status && (
+                                            <div className={`p-4 rounded-2xl flex items-center gap-3 ${status.type === 'success' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-rose-50 text-rose-600 border border-rose-100'}`}>
+                                                {status.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
+                                                <span className="font-bold text-sm">{status.text}</span>
+                                            </div>
+                                        )}
                                         <div className="grid md:grid-cols-2 gap-6">
                                             <div className="space-y-2">
                                                 <label className="text-sm font-bold text-slate-700">First Name</label>
-                                                <input type="text" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all font-medium" placeholder="Jane" />
+                                                <input type="text" name="firstName" required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all font-medium" placeholder="Jane" />
                                             </div>
                                             <div className="space-y-2">
                                                 <label className="text-sm font-bold text-slate-700">Last Name</label>
-                                                <input type="text" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all font-medium" placeholder="Doe" />
+                                                <input type="text" name="lastName" required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all font-medium" placeholder="Doe" />
                                             </div>
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-sm font-bold text-slate-700">Email Address</label>
-                                            <input type="email" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all font-medium" placeholder="jane@example.com" />
+                                            <input type="email" name="email" required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all font-medium" placeholder="jane@example.com" />
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-sm font-bold text-slate-700">Topic</label>
-                                            <select className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all font-medium text-slate-600">
+                                            <select name="topic" required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all font-medium text-slate-600">
                                                 <option>Order Status</option>
                                                 <option>Returns & Refunds</option>
                                                 <option>Account Issues</option>
@@ -68,10 +144,19 @@ const Contact: React.FC = () => {
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-sm font-bold text-slate-700">Message</label>
-                                            <textarea className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 h-32 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all font-medium resize-none" placeholder="How can we help you?"></textarea>
+                                            <textarea name="message" required className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 h-32 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all font-medium resize-none" placeholder="How can we help you?"></textarea>
                                         </div>
-                                        <button type="button" className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary-600/20 transform active:scale-[0.98] transition-all">
-                                            Send Message
+                                        <button
+                                            type="submit"
+                                            disabled={isSubmitting}
+                                            className="w-full bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl shadow-lg shadow-primary-600/20 transform active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                                        >
+                                            {isSubmitting ? 'Sending...' : (
+                                                <>
+                                                    <Mail size={18} />
+                                                    Send Message
+                                                </>
+                                            )}
                                         </button>
                                     </form>
                                 </div>
