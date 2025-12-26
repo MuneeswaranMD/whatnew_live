@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import GeminiChat from '../components/GeminiChat';
+import ProtectedRoute from '../components/ProtectedRoute';
 
 // Pages
 import Home from '../pages/Home';
@@ -23,6 +24,8 @@ import UpdateCredentials from '../pages/UpdateCredentials';
 import MultipleAccounts from '../pages/MultipleAccounts';
 import DeleteAccount from '../pages/DeleteAccount';
 import TermsConditions from '../pages/TermsConditions';
+import CRM from '../pages/CRM';
+import Login from '../pages/Login';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -58,6 +61,12 @@ const AnimatedRoutes = () => {
         <Route path="/multiple-accounts" element={<MultipleAccounts />} />
         <Route path="/delete-account" element={<DeleteAccount />} />
         <Route path="/terms" element={<TermsConditions />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/crm" element={
+          <ProtectedRoute>
+            <CRM />
+          </ProtectedRoute>
+        } />
       </Routes>
     </div>
   );
@@ -67,15 +76,24 @@ const App = () => {
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <div className="flex flex-col min-h-screen font-sans bg-slate-50">
-        <Navbar />
-        <main className="flex-grow flex flex-col">
-          <AnimatedRoutes />
-        </main>
-        <GeminiChat />
-        <Footer />
-      </div>
+      <AppContent />
     </BrowserRouter>
+  );
+};
+
+const AppContent = () => {
+  const location = useLocation();
+  const hideNavFooter = ['/crm', '/login'].includes(location.pathname);
+
+  return (
+    <div className="flex flex-col min-h-screen font-sans bg-slate-50">
+      {!hideNavFooter && <Navbar />}
+      <main className="flex-grow flex flex-col">
+        <AnimatedRoutes />
+      </main>
+      {!hideNavFooter && <GeminiChat />}
+      {!hideNavFooter && <Footer />}
+    </div>
   );
 };
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ShoppingBag, Zap, Gift, Tag, Play, Mail, CheckCircle, Smartphone, QrCode, Globe, Users, TrendingUp, Shield, Star, Crown, Timer, Sparkles, MessageCircle, Activity, DollarSign, Award, Apple } from 'lucide-react';
 import Reveal from '../components/Reveal';
+import { contentService, LiveStream, Drop, Testimonial } from '../services/contentService';
 
 // Animated Counter Hook
 const useCountUp = (end: number, duration: number = 2000, startOnView: boolean = true) => {
@@ -98,6 +99,42 @@ const StatCard: React.FC<StatCardProps> = ({ icon, value, prefix = '', suffix = 
 };
 
 const Home: React.FC = () => {
+  const [trendingStreams, setTrendingStreams] = useState<LiveStream[]>([]);
+  const [upcomingDrops, setUpcomingDrops] = useState<Drop[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [streams, drops, reviews] = await Promise.all([
+          contentService.getTrendingStreams(),
+          contentService.getUpcomingDrops(),
+          contentService.getTestimonials()
+        ]);
+        setTrendingStreams(streams);
+        setUpcomingDrops(drops);
+        setTestimonials(reviews);
+      } catch (error) {
+        console.error('Error fetching home data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-white font-bold text-xl">Loading Experience...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 [perspective:2000px] overflow-x-hidden">
 
@@ -328,11 +365,7 @@ const Home: React.FC = () => {
           </Reveal>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { category: 'Fashion & Style', title: 'Designer Handbags Flash Sale', streamer: 'StyleQueen', viewers: '8.2k', image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=600&q=80' },
-              { category: 'Sneakers', title: 'Rare Jordan 1s Auction Night', streamer: 'SneakerKing', viewers: '5.7k', image: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=600&q=80' },
-              { category: 'Electronics', title: 'iPhone 16 Pro Unboxing', streamer: 'TechGuru', viewers: '12.1k', image: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&w=600&q=80' }
-            ].map((item, i) => (
+            {trendingStreams.map((item, i) => (
               <Reveal key={i} delay={i * 150} animation="zoom-in">
                 <div className="group rounded-3xl overflow-hidden relative aspect-[3/4] cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
                   <img src={item.image} alt={item.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
@@ -386,44 +419,7 @@ const Home: React.FC = () => {
 
           {/* Drops Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                title: "Limited Edition Sneakers",
-                brand: "Nike x Travis Scott",
-                price: "₹12,500",
-                originalPrice: "₹18,000",
-                date: "Dec 18",
-                time: "2:00 PM",
-                spots: 50,
-                interested: 2340,
-                image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=600&q=80",
-                gradient: "from-orange-500 to-red-500"
-              },
-              {
-                title: "Vintage Film Camera",
-                brand: "Leica M6 Classic",
-                price: "₹85,000",
-                originalPrice: "₹1,20,000",
-                date: "Dec 19",
-                time: "10:00 AM",
-                spots: 25,
-                interested: 890,
-                image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=600&q=80",
-                gradient: "from-blue-500 to-purple-500"
-              },
-              {
-                title: "Designer Handbag",
-                brand: "Gucci x Palace",
-                price: "₹45,000",
-                originalPrice: "₹65,000",
-                date: "Dec 20",
-                time: "6:00 PM",
-                spots: 100,
-                interested: 5670,
-                image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=600&q=80",
-                gradient: "from-pink-500 to-rose-500"
-              }
-            ].map((drop, i) => (
+            {upcomingDrops.map((drop, i) => (
               <Reveal key={i} delay={i * 150} animation="flip-in">
                 <div className="group relative h-full">
                   {/* Gradient Border Glow */}
@@ -448,7 +444,7 @@ const Home: React.FC = () => {
 
                       {/* Interested Badge */}
                       <div className="absolute top-4 right-4 bg-white/10 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1">
-                        <Users size={12} /> {drop.interested.toLocaleString()} interested
+                        <Users size={12} /> {(drop.interested || 0).toLocaleString()} interested
                       </div>
                     </div>
 
@@ -601,33 +597,7 @@ const Home: React.FC = () => {
           </Reveal>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                name: "Alex Chen",
-                role: "Power Seller",
-                image: "https://i.pravatar.cc/100?img=11",
-                quote: "WhatNew completely changed my business. I went from ₹1k to ₹50k/month just by streaming 2 hours a day.",
-                stats: "₹50k/month",
-                gradient: "from-blue-500 to-cyan-500"
-              },
-              {
-                name: "Jessica Wu",
-                role: "Sneaker Collector",
-                image: "https://i.pravatar.cc/100?img=5",
-                quote: "The community here is unmatched. I've made actual friends while bidding on sneakers. It's addictive!",
-                stats: "200+ Deals",
-                gradient: "from-purple-500 to-pink-500",
-                featured: true
-              },
-              {
-                name: "David Miller",
-                role: "Vintage Expert",
-                image: "https://i.pravatar.cc/100?img=12",
-                quote: "Finally a platform that understands collectors. The authentication service gives me total peace of mind.",
-                stats: "500+ Items Sold",
-                gradient: "from-orange-500 to-red-500"
-              }
-            ].map((review, i) => (
+            {testimonials.map((review, i) => (
               <Reveal key={i} delay={i * 150} animation="fade-left">
                 <div className={`relative h-full group ${review.featured ? 'md:-mt-4 md:mb-4' : ''}`}>
                   {/* Gradient Border for Featured */}

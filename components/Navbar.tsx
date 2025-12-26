@@ -7,6 +7,7 @@ const navItems: NavItem[] = [
   { label: 'Home', path: '/' },
   { label: 'Blog', path: '/blog' },
   { label: 'About', path: '/about' },
+  { label: 'Admin', path: '/crm' },
 ];
 
 const Navbar: React.FC = () => {
@@ -32,7 +33,7 @@ const Navbar: React.FC = () => {
         pointer-events-auto
         bg-white
         w-full max-w-6xl transition-all duration-300
-        ₹{scrolled || isOpen ? 'bg-white shadow-xl border border-slate-200/50' : 'bg-white backdrop-blur-sm border border-transparent shadow-sm'}
+        ${scrolled || isOpen ? 'bg-white shadow-xl border border-slate-200/50' : 'bg-white backdrop-blur-sm border border-transparent shadow-sm'}
         rounded-2xl lg:rounded-full px-4 sm:px-6 py-3
       `}>
         <div className="flex justify-between items-center ">
@@ -53,22 +54,20 @@ const Navbar: React.FC = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ₹{
-                      isActive(item.path)
-                        ? 'text-primary-600 bg-primary-50'
-                        : 'text-slate-600 hover:text-primary-600 hover:bg-slate-50'
-                    }`}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${isActive(item.path)
+                  ? 'text-primary-600 bg-primary-50'
+                  : 'text-slate-600 hover:text-primary-600 hover:bg-slate-50'
+                  }`}
               >
                 {item.label}
               </Link>
             ))}
             <Link
               to="/affiliates"
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ₹{
-                      isActive('/affiliates')
-                        ? 'text-primary-600 bg-primary-50'
-                        : 'text-slate-600 hover:text-primary-600 hover:bg-slate-50'
-                    }`}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${isActive('/affiliates')
+                ? 'text-primary-600 bg-primary-50'
+                : 'text-slate-600 hover:text-primary-600 hover:bg-slate-50'
+                }`}
             >
               Affiliates
             </Link>
@@ -109,11 +108,10 @@ const Navbar: React.FC = () => {
                 key={item.path}
                 to={item.path}
                 onClick={() => setIsOpen(false)}
-                className={`block px-4 py-3 rounded-xl text-base font-medium ₹{
-                      isActive(item.path)
-                        ? 'text-primary-600 bg-primary-50'
-                        : 'text-slate-600 hover:text-primary-600 hover:bg-slate-50'
-                    }`}
+                className={`block px-4 py-3 rounded-xl text-base font-medium ${isActive(item.path)
+                  ? 'text-primary-600 bg-primary-50'
+                  : 'text-slate-600 hover:text-primary-600 hover:bg-slate-50'
+                  }`}
               >
                 {item.label}
               </Link>
@@ -121,11 +119,10 @@ const Navbar: React.FC = () => {
             <Link
               to="/affiliates"
               onClick={() => setIsOpen(false)}
-              className={`block px-4 py-3 rounded-xl text-base font-medium ₹{
-                      isActive('/affiliates')
-                        ? 'text-primary-600 bg-primary-50'
-                        : 'text-slate-600 hover:text-primary-600 hover:bg-slate-50'
-                    }`}
+              className={`block px-4 py-3 rounded-xl text-base font-medium ${isActive('/affiliates')
+                ? 'text-primary-600 bg-primary-50'
+                : 'text-slate-600 hover:text-primary-600 hover:bg-slate-50'
+                }`}
             >
               Affiliates
             </Link>

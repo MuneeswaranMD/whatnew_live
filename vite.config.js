@@ -10,8 +10,13 @@ export default defineConfig(({ mode }) => {
       server: {
         port: 3000,
         host: '0.0.0.0',
-        // Enable history API fallback for client-side routing
         historyApiFallback: true,
+        proxy: {
+          '/api': {
+            target: 'http://localhost:5000',
+            changeOrigin: true,
+          }
+        }
       },
       build: {
         outDir: 'dist',

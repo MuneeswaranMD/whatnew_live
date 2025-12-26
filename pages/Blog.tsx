@@ -3,109 +3,7 @@ import { Calendar, Clock, ArrowRight, BookOpen, User, Tag, TrendingUp, Smartphon
 import Reveal from '../components/Reveal';
 import { Link } from 'react-router-dom';
 
-// Blog Post Interface
-interface BlogPost {
-   id: number;
-   title: string;
-   excerpt: string;
-   content?: string;
-   author: {
-      name: string;
-      role: string;
-      image: string;
-   };
-   category: string;
-   tags: string[];
-   date: string;
-   readTime: string;
-   image: string;
-   views: number;
-   likes: number;
-   featured?: boolean;
-}
-
-// Manual Blog Posts Data
-const blogPosts: BlogPost[] = [
-   {
-      id: 1,
-      title: 'The Complete Guide to Live Shopping in 2025',
-      excerpt: 'Discover how live commerce is revolutionizing the way we shop online. From real-time auctions to interactive product demos, learn everything you need to know about this booming industry.',
-      author: { name: 'Sarah Chen', role: 'Commerce Expert', image: 'https://i.pravatar.cc/100?img=5' },
-      category: 'Live Commerce',
-      tags: ['Live Shopping', 'E-commerce', 'Trends'],
-      date: 'Dec 15, 2025',
-      readTime: '8 min read',
-      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=80',
-      views: 15420,
-      likes: 892,
-      featured: true
-   },
-   {
-      id: 2,
-      title: 'How AI is Transforming Customer Experience',
-      excerpt: 'Artificial Intelligence is no longer just a buzzword. See how AI-powered tools are creating personalized shopping experiences and boosting conversion rates.',
-      author: { name: 'Alex Rivera', role: 'Tech Editor', image: 'https://i.pravatar.cc/100?img=11' },
-      category: 'Technology',
-      tags: ['AI', 'Machine Learning', 'Customer Experience'],
-      date: 'Dec 14, 2025',
-      readTime: '6 min read',
-      image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80',
-      views: 12350,
-      likes: 654
-   },
-   {
-      id: 3,
-      title: 'Building Your Brand Through Live Streaming',
-      excerpt: 'Learn proven strategies to grow your audience, engage viewers, and build a loyal community through authentic live streaming content.',
-      author: { name: 'Jessica Wu', role: 'Content Strategist', image: 'https://i.pravatar.cc/100?img=9' },
-      category: 'Creator Tips',
-      tags: ['Branding', 'Streaming', 'Growth'],
-      date: 'Dec 13, 2025',
-      readTime: '10 min read',
-      image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80',
-      views: 9870,
-      likes: 521
-   },
-   {
-      id: 4,
-      title: 'NFTs and Digital Collectibles: What You Need to Know',
-      excerpt: 'The intersection of blockchain technology and collectibles is creating new opportunities for sellers and collectors alike.',
-      author: { name: 'Marcus Wong', role: 'Blockchain Writer', image: 'https://i.pravatar.cc/100?img=12' },
-      category: 'Web3',
-      tags: ['NFT', 'Blockchain', 'Collectibles'],
-      date: 'Dec 12, 2025',
-      readTime: '7 min read',
-      image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=1200&q=80',
-      views: 8540,
-      likes: 432
-   },
-   {
-      id: 5,
-      title: 'The Psychology Behind Auction Bidding',
-      excerpt: 'Understanding the psychological triggers that drive auction behavior can help both buyers and sellers maximize their success.',
-      author: { name: 'Priya Sharma', role: 'Market Analyst', image: 'https://i.pravatar.cc/100?img=23' },
-      category: 'Insights',
-      tags: ['Psychology', 'Auctions', 'Behavior'],
-      date: 'Dec 11, 2025',
-      readTime: '5 min read',
-      image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=80',
-      views: 7650,
-      likes: 398
-   },
-   {
-      id: 6,
-      title: 'Sustainable Fashion in the Digital Age',
-      excerpt: 'How technology is enabling eco-conscious shopping and helping reduce the fashion industry\'s environmental footprint.',
-      author: { name: 'Emma Davis', role: 'Sustainability Editor', image: 'https://i.pravatar.cc/100?img=25' },
-      category: 'Sustainability',
-      tags: ['Fashion', 'Sustainability', 'Environment'],
-      date: 'Dec 10, 2025',
-      readTime: '6 min read',
-      image: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1200&q=80',
-      views: 6890,
-      likes: 356
-   }
-];
+import { contentService, BlogPost } from '../services/contentService';
 
 // Categories
 const categories = [
@@ -121,8 +19,36 @@ const categories = [
 const trendingTopics = ['#LiveShopping', '#AI2025', '#SneakerDrops', '#VintageCollecting', '#CryptoCommerce', '#CreatorEconomy'];
 
 const Blog: React.FC = () => {
+   const [blogPosts, setBlogPosts] = React.useState<BlogPost[]>([]);
+   const [isLoading, setIsLoading] = React.useState(true);
+
+   React.useEffect(() => {
+      const fetchPosts = async () => {
+         try {
+            const posts = await contentService.getBlogPosts();
+            setBlogPosts(posts);
+         } catch (error) {
+            console.error('Error fetching blog posts:', error);
+         } finally {
+            setIsLoading(false);
+         }
+      };
+      fetchPosts();
+   }, []);
+
    const featuredPost = blogPosts.find(post => post.featured);
    const regularPosts = blogPosts.filter(post => !post.featured);
+
+   if (isLoading) {
+      return (
+         <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+            <div className="flex flex-col items-center gap-4">
+               <div className="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+               <p className="text-white font-bold text-xl">Loading Insights...</p>
+            </div>
+         </div>
+      );
+   }
 
    return (
       <div className="min-h-screen bg-slate-50">
@@ -138,7 +64,7 @@ const Blog: React.FC = () => {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                <Reveal className="text-center">
-                  
+
                   <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight text-center">
                      Discover. Learn. <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-purple-400">Innovate</span>.
                   </h1>
@@ -196,10 +122,10 @@ const Blog: React.FC = () => {
                               </div>
                               <div className="absolute bottom-6 left-6 flex items-center gap-4">
                                  <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md text-white text-sm px-3 py-1.5 rounded-full">
-                                    <Eye size={14} /> {featuredPost.views.toLocaleString()}
+                                    <Eye size={14} /> {(featuredPost.views || 0).toLocaleString()}
                                  </div>
                                  <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md text-white text-sm px-3 py-1.5 rounded-full">
-                                    <Heart size={14} /> {featuredPost.likes}
+                                    <Heart size={14} /> {featuredPost.likes || 0}
                                  </div>
                               </div>
                            </div>
@@ -316,8 +242,8 @@ const Blog: React.FC = () => {
                                  <span className="text-sm font-medium text-slate-700">{post.author.name}</span>
                               </div>
                               <div className="flex items-center gap-3 text-sm text-slate-400">
-                                 <span className="flex items-center gap-1"><Eye size={14} /> {(post.views / 1000).toFixed(1)}k</span>
-                                 <span className="flex items-center gap-1"><Heart size={14} /> {post.likes}</span>
+                                 <span className="flex items-center gap-1"><Eye size={14} /> {((post.views || 0) / 1000).toFixed(1)}k</span>
+                                 <span className="flex items-center gap-1"><Heart size={14} /> {post.likes || 0}</span>
                               </div>
                            </div>
                         </div>
