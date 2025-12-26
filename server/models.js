@@ -59,8 +59,27 @@ const enquirySchema = new mongoose.Schema({
   status: { type: String, default: 'new' }
 }, { timestamps: true });
 
+const subscriberSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  type: { type: String, default: 'newsletter' }, // newsletter, vip
+  status: { type: String, default: 'active' }
+}, { timestamps: true });
+
+const visitorSchema = new mongoose.Schema({
+  sessionId: { type: String, required: true, unique: true },
+  notificationStatus: { type: String, default: 'default' }, // granted, denied, default
+  pagePath: String,
+  history: [{
+    path: String,
+    timestamp: { type: Date, default: Date.now }
+  }],
+  lastSeen: { type: Date, default: Date.now }
+}, { timestamps: true });
+
 export const BlogPost = mongoose.model('BlogPost', blogPostSchema);
 export const LiveStream = mongoose.model('LiveStream', liveStreamSchema);
 export const Drop = mongoose.model('Drop', dropSchema);
 export const Testimonial = mongoose.model('Testimonial', testimonialSchema);
 export const Enquiry = mongoose.model('Enquiry', enquirySchema);
+export const Subscriber = mongoose.model('Subscriber', subscriberSchema);
+export const Visitor = mongoose.model('Visitor', visitorSchema);

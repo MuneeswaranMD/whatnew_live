@@ -1,16 +1,44 @@
 import express from 'express';
-import { BlogPost, LiveStream, Drop, Testimonial, Enquiry } from './models.js';
+import { BlogPost, LiveStream, Drop, Testimonial, Enquiry, Subscriber, Visitor } from './models.js';
 
 const router = express.Router();
 
 router.get('/health', (req, res) => res.json({ status: 'ok', time: new Date() }));
+
+// Visitor Tracking
+router.post('/visitors/track', async (req, res) => {
+  const { sessionId, path, notificationStatus } = req.body;
+  try {
+    let visitor = await Visitor.findOne({ sessionId });
+    if (!visitor) {
+      visitor = new Visitor({ sessionId, notificationStatus, pagePath: path });
+    } else {
+      if (notificationStatus) visitor.notificationStatus = notificationStatus;
+      visitor.pagePath = path;
+      visitor.lastSeen = new Date();
+    }
+    
+    // Add to history only if path changed
+    const lastHistory = visitor.history[visitor.history.length - 1];
+    if (!lastHistory || lastHistory.path !== path) {
+      visitor.history.push({ path });
+      // Limit history to last 20
+      if (visitor.history.length > 20) visitor.history.shift();
+    }
+    
+    await visitor.save();
+    res.json(visitor);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // Helper for generic CRUD
 const setupCrud = (route, model) => {
   // Get all
   router.get(`/${route}`, async (req, res) => {
     try {
-      const items = await model.find().sort({ createdAt: -1 });
+      const items = await model.find().sort({ updatedAt: -1 });
       res.json(items);
     } catch (err) {
       console.error(`❌ Error fetching ${route}:`, err);
@@ -60,10 +88,34 @@ const setupCrud = (route, model) => {
   });
 };
 
+// Dashboard Stats
+router.get('/stats', async (req, res) => {
+  try {
+    const [blogs, streams, drops, testimonials, totalEnquiries, newEnquiries, subscribers, visitors] = await Promise.all([
+      BlogPost.countDocuments(),
+      LiveStream.countDocuments(),
+      Drop.countDocuments(),
+      Testimonial.countDocuments(),
+      Enquiry.countDocuments(),
+      Enquiry.countDocuments({ status: 'new' }),
+      Subscriber.countDocuments(),
+      Visitor.countDocuments(),
+    ]);
+    const stats = { blogs, streams, drops, testimonials, totalEnquiries, newEnquiries, subscribers, visitors };
+    console.log('📊 Cloud Stats:', stats);
+    res.json(stats);
+  } catch (err) {
+    console.error('❌ Stats Error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 setupCrud('blogs', BlogPost);
 setupCrud('streams', LiveStream);
 setupCrud('drops', Drop);
 setupCrud('testimonials', Testimonial);
 setupCrud('enquiries', Enquiry);
+setupCrud('subscribers', Subscriber);
+setupCrud('visitors', Visitor);
 
 export default router;

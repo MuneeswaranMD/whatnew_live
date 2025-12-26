@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import GeminiChat from './components/GeminiChat';
+import ConsentBanner from './components/ConsentBanner';
 
 // Pages
 import Home from './pages/Home';
@@ -35,8 +36,22 @@ const ScrollToTop = () => {
   return null;
 };
 
+import { contentService } from './services/contentService';
+
 const AnimatedRoutes: React.FC = () => {
   const location = useLocation();
+
+  React.useEffect(() => {
+    // Initial track on route change
+    contentService.trackVisitor({ path: location.pathname });
+
+    // Keep session alive and update "Last Seen" every 30 seconds
+    const interval = setInterval(() => {
+      contentService.trackVisitor({ path: location.pathname });
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [location.pathname]);
 
   return (
     <div key={location.pathname} className="animate-fade-in-up w-full flex-grow flex flex-col">
@@ -74,6 +89,7 @@ const App: React.FC = () => {
           <AnimatedRoutes />
         </main>
         <GeminiChat />
+        <ConsentBanner />
         <Footer />
       </div>
     </>

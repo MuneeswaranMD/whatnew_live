@@ -2,20 +2,7 @@ import React from 'react';
 import { Target, Eye, Users, Zap, Heart, Shield, Sparkles, Award, Calendar, MapPin, Linkedin, Twitter } from 'lucide-react';
 import Reveal from '../components/Reveal';
 
-const teamMembers = [
-  { name: 'Rahul Verma', role: 'Founder & CEO', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80', bio: 'Former tech lead at Amazon with 10+ years in e-commerce' },
-  { name: 'Priya Nair', role: 'CTO', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80', bio: 'AI & ML expert, previously at Google Research' },
-  { name: 'David Kim', role: 'Head of Product', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=300&q=80', bio: 'Built products at Shopify and Instagram' },
-  { name: 'Sarah Johnson', role: 'VP of Marketing', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=300&q=80', bio: 'Brand strategist with Fortune 500 experience' },
-];
 
-const milestones = [
-  { year: '2021', title: 'Founded', description: 'WhatNew was born from a vision to revolutionize live commerce' },
-  { year: '2022', title: 'Seed Funding', description: 'Raised ₹5 Crore to build our platform' },
-  { year: '2023', title: '100K Users', description: 'Reached our first 100,000 active users' },
-  { year: '2024', title: 'Series A', description: 'Secured ₹25 Crore for expansion' },
-  { year: '2025', title: '500+ Partners', description: 'Onboarded 500+ verified sellers and brands' },
-];
 
 const coreValues = [
   { icon: <Sparkles size={28} />, title: 'Innovation', description: 'We push boundaries and embrace new technologies to stay ahead.' },
@@ -124,75 +111,9 @@ const About: React.FC = () => {
           </div>
         </div>
 
-        {/* Team Section */}
-        <div className="mt-24">
-          <Reveal>
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-50 text-primary-600 text-sm font-bold mb-4">
-                <Users size={14} /> Meet the Team
-              </div>
-              <h2 className="text-3xl font-bold text-slate-900 mb-4">The People Behind WhatNew</h2>
-              <p className="text-lg text-slate-600 max-w-2xl mx-auto">Passionate individuals dedicated to transforming live commerce</p>
-            </div>
-          </Reveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {teamMembers.map((member, index) => (
-              <Reveal key={index} delay={index * 100}>
-                <div className="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 group h-full">
-                  <div className="h-48 overflow-hidden">
-                    <img src={member.image} alt={member.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-slate-900">{member.name}</h3>
-                    <p className="text-primary-600 font-medium text-sm mb-3">{member.role}</p>
-                    <p className="text-slate-500 text-sm">{member.bio}</p>
-                    <div className="flex gap-3 mt-4">
-                      <button className="text-slate-400 hover:text-primary-600 transition-colors"><Linkedin size={18} /></button>
-                      <button className="text-slate-400 hover:text-primary-600 transition-colors"><Twitter size={18} /></button>
-                    </div>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
 
-        {/* Milestones Timeline */}
-        <div className="mt-24">
-          <Reveal>
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-sm font-bold mb-4">
-                <Calendar size={14} /> Our Journey
-              </div>
-              <h2 className="text-3xl font-bold text-slate-900 mb-4">Key Milestones</h2>
-              <p className="text-lg text-slate-600 max-w-2xl mx-auto">From startup to industry leader</p>
-            </div>
-          </Reveal>
 
-          <div className="relative">
-            {/* Timeline line */}
-            <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-0.5 bg-slate-200 -translate-x-1/2"></div>
-
-            <div className="space-y-8 md:space-y-0">
-              {milestones.map((milestone, index) => (
-                <Reveal key={index} delay={index * 100}>
-                  <div className={`flex flex-col md:flex-row items-center gap-8 ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
-                    <div className={`md:w-1/2 ${index % 2 === 0 ? 'md:text-right md:pr-12' : 'md:text-left md:pl-12'}`}>
-                      <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition-all inline-block">
-                        <span className="text-primary-600 font-black text-2xl">{milestone.year}</span>
-                        <h3 className="text-xl font-bold text-slate-900 mt-2">{milestone.title}</h3>
-                        <p className="text-slate-500 mt-1">{milestone.description}</p>
-                      </div>
-                    </div>
-                    <div className="hidden md:flex w-4 h-4 bg-primary-600 rounded-full border-4 border-white shadow-lg z-10"></div>
-                    <div className="md:w-1/2"></div>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </div>
 
       </div>
     </div>

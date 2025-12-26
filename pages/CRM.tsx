@@ -40,7 +40,10 @@ import {
     Star,
     Download,
     Inbox,
-    Eye
+    Eye,
+    Mail,
+    Activity,
+    Crown
 } from 'lucide-react';
 import { auth } from '../src/firebase';
 import { signOut } from 'firebase/auth';
@@ -48,7 +51,7 @@ import Reveal from '../components/Reveal';
 import { contentService, BlogPost, LiveStream, Drop, Testimonial } from '../services/contentService';
 import { Link } from 'react-router-dom';
 
-type TabType = 'blogs' | 'streams' | 'drops' | 'testimonials' | 'enquiries';
+type TabType = 'blogs' | 'streams' | 'drops' | 'testimonials' | 'enquiries' | 'subscribers' | 'visitors';
 
 const CRM: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabType>('blogs');
@@ -66,6 +69,7 @@ const CRM: React.FC = () => {
     const [unreadCount, setUnreadCount] = useState(0);
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
     const [notifiedEnquiryIds, setNotifiedEnquiryIds] = useState<Set<string>>(new Set());
+    const [counts, setCounts] = useState<any>({});
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const handleScroll = () => {
@@ -97,14 +101,25 @@ const CRM: React.FC = () => {
         { id: 'drops', label: 'Upcoming Drops', icon: <ShoppingBag size={20} />, color: 'bg-orange-500' },
         { id: 'testimonials', label: 'Testimonials', icon: <MessageSquare size={20} />, color: 'bg-emerald-500' },
         { id: 'enquiries', label: 'Enquiries', icon: <Inbox size={20} />, color: 'bg-rose-500' },
+        { id: 'subscribers', label: 'Subscribers', icon: <Users size={20} />, color: 'bg-blue-600' },
+        { id: 'visitors', label: 'Visitor Logs', icon: <Activity size={20} />, color: 'bg-indigo-600' },
     ];
 
     const stats = [
-        { label: 'Total Views', value: '124.5k', icon: <TrendingUp size={20} />, trend: '+12%', color: 'from-blue-500 to-cyan-500' },
-        { label: 'Active Streams', value: '18', icon: <Video size={20} />, trend: '+3', color: 'from-purple-500 to-pink-500' },
-        { label: 'Total Sales', value: '₹4.2M', icon: <DollarSign size={20} />, trend: '+8%', color: 'from-orange-500 to-red-500' },
-        { label: 'Cloud DB', value: 'Synced', icon: <Database size={20} />, trend: 'Stable', color: 'from-emerald-500 to-teal-500' },
+        { label: 'Cloud Content', value: (counts.blogs || 0) + (counts.streams || 0) + (counts.drops || 0), icon: <Database size={20} />, trend: 'Live', color: 'from-blue-500 to-cyan-500' },
+        { label: 'Active Streams', value: counts.streams || 0, icon: <Video size={20} />, trend: 'Stable', color: 'from-purple-500 to-pink-500' },
+        { label: 'Total Visitors', value: counts.visitors || 0, icon: <Activity size={20} />, trend: 'Real-time', color: 'from-indigo-500 to-blue-500' },
+        { label: 'New Enquiries', value: counts.newEnquiries || 0, icon: <Inbox size={20} />, trend: (counts.newEnquiries || 0) > 0 ? '+New' : 'Zero', color: 'from-rose-500 to-orange-500' },
     ];
+
+    const fetchStats = async () => {
+        try {
+            const currentStats = await contentService.getStats();
+            if (currentStats) setCounts(currentStats);
+        } catch (err) {
+            console.error('Stats fetch failed', err);
+        }
+    };
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -116,6 +131,8 @@ const CRM: React.FC = () => {
                 case 'drops': data = await contentService.getUpcomingDrops(); break;
                 case 'testimonials': data = await contentService.getTestimonials(); break;
                 case 'enquiries': data = await contentService.getEnquiries(); break;
+                case 'subscribers': data = await contentService.getSubscribers(); break;
+                case 'visitors': data = await contentService.getVisitors(); break;
             }
             setItems(data);
         } catch (err) {
@@ -123,8 +140,13 @@ const CRM: React.FC = () => {
             setMessage({ text: 'Failed to load data', type: 'error' });
         } finally {
             setIsLoading(false);
+            fetchStats();
         }
     };
+
+    useEffect(() => {
+        fetchStats();
+    }, []);
 
     useEffect(() => {
         fetchData();
@@ -167,6 +189,10 @@ const CRM: React.FC = () => {
                     newEnquiries.forEach(e => next.add(e._id));
                     return next;
                 });
+
+                // Refresh counts immediately when new enquiries arrive
+                const freshStats = await contentService.getStats();
+                if (freshStats) setCounts(freshStats);
             }
         } catch (err) {
             console.error('Enquiry check failed', err);
@@ -197,10 +223,12 @@ const CRM: React.FC = () => {
     const downloadExcel = () => {
         if (items.length === 0) return;
 
-        const headers = ['First Name', 'Last Name', 'Email', 'Topic', 'Message', 'Status', 'Date'];
-        const csvContent = [
-            headers.join(','),
-            ...items.map(item => [
+        let headers: string[] = [];
+        let rows: any[] = [];
+
+        if (activeTab === 'enquiries') {
+            headers = ['First Name', 'Last Name', 'Email', 'Topic', 'Message', 'Status', 'Date'];
+            rows = items.map(item => [
                 `"${item.firstName || ''}"`,
                 `"${item.lastName || ''}"`,
                 `"${item.email || ''}"`,
@@ -208,14 +236,37 @@ const CRM: React.FC = () => {
                 `"${item.message?.replace(/"/g, '""') || ''}"`,
                 `"${item.status || ''}"`,
                 `"${new Date(item.createdAt).toLocaleDateString()}"`
-            ].join(','))
+            ]);
+        } else if (activeTab === 'subscribers') {
+            headers = ['Email', 'Status', 'Join Date'];
+            rows = items.map(item => [
+                `"${item.email || ''}"`,
+                `"${item.status || ''}"`,
+                `"${new Date(item.createdAt).toLocaleDateString()}"`
+            ]);
+        } else if (activeTab === 'visitors') {
+            headers = ['Session ID', 'Current Path', 'Total Pages', 'Notification', 'Last Seen'];
+            rows = items.map(item => [
+                `"${item.sessionId || 'anonymous'}"`,
+                `"${item.pagePath || '/'}"`,
+                `"${item.history?.length || 0}"`,
+                `"${item.notificationStatus || 'default'}"`,
+                `"${new Date(item.lastSeen || item.updatedAt).toLocaleString()}"`
+            ]);
+        }
+
+        if (headers.length === 0) return;
+
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.join(','))
         ].join('\n');
 
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
         link.setAttribute('href', url);
-        link.setAttribute('download', `enquiries_${new Date().toISOString().split('T')[0]}.csv`);
+        link.setAttribute('download', `${activeTab}_${new Date().toISOString().split('T')[0]}.csv`);
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
@@ -461,21 +512,23 @@ const CRM: React.FC = () => {
                     </Reveal>
 
                     {/* Stats Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-10">
                         {stats.map((stat, i) => (
                             <Reveal key={i} delay={i * 100} animation="fade-up">
-                                <div className="bg-white/5 border border-white/10 p-6 rounded-3xl hover:bg-white/10 transition-all group overflow-hidden relative">
-                                    <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 blur-2xl transition-opacity`}></div>
+                                <div className="bg-white/5 border border-white/10 p-4 lg:p-6 rounded-2xl lg:rounded-3xl hover:bg-white/10 transition-all group overflow-hidden relative h-full flex flex-col justify-between">
+                                    <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 blur-2xl transition-opacity`}></div>
                                     <div className="flex items-center justify-between mb-4">
-                                        <div className="p-3 bg-white/5 rounded-2xl text-primary-400 group-hover:text-white group-hover:bg-primary-600 transition-all">
+                                        <div className="p-2 lg:p-3 bg-white/5 rounded-xl lg:rounded-2xl text-primary-400 group-hover:text-white group-hover:bg-primary-600 transition-all">
                                             {stat.icon}
                                         </div>
-                                        <span className={`text-[10px] font-black px-2 py-1 rounded-lg ${stat.trend.startsWith('+') ? 'bg-emerald-500/10 text-emerald-500' : 'bg-blue-500/10 text-blue-500'}`}>
+                                        <span className={`text-[9px] lg:text-[10px] font-black px-2 py-0.5 lg:py-1 rounded-lg ${stat.trend.startsWith('+') ? 'bg-emerald-500/10 text-emerald-500' : 'bg-blue-500/10 text-blue-500'}`}>
                                             {stat.trend}
                                         </span>
                                     </div>
-                                    <div className="text-2xl font-black text-white mb-1">{stat.value}</div>
-                                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">{stat.label}</div>
+                                    <div>
+                                        <div className="text-xl lg:text-2xl font-black text-white mb-0.5 underline decoration-primary-500/20 underline-offset-4">{stat.value}</div>
+                                        <div className="text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider">{stat.label}</div>
+                                    </div>
                                 </div>
                             </Reveal>
                         ))}
@@ -490,7 +543,7 @@ const CRM: React.FC = () => {
                                     <h4 className="text-lg lg:text-xl font-bold text-white mb-1">Manage {activeTab}</h4>
                                     <p className="text-sm text-slate-500 font-medium">Create, update or remove items live.</p>
                                 </div>
-                                {activeTab !== 'enquiries' && (
+                                {activeTab !== 'enquiries' && activeTab !== 'subscribers' && activeTab !== 'visitors' && (
                                     <button
                                         onClick={() => { setEditingItem(null); setIsEditing(true); }}
                                         className="px-4 lg:px-6 py-3 bg-primary-600 hover:bg-primary-500 text-white rounded-xl lg:rounded-2xl font-black flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary-600/20 active:scale-95"
@@ -498,7 +551,7 @@ const CRM: React.FC = () => {
                                         <Plus size={20} /> Add Entry
                                     </button>
                                 )}
-                                {activeTab === 'enquiries' && (
+                                {(activeTab === 'enquiries' || activeTab === 'subscribers' || activeTab === 'visitors') && (
                                     <button
                                         onClick={downloadExcel}
                                         className="px-4 lg:px-6 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl lg:rounded-2xl font-black flex items-center justify-center gap-2 transition-all border border-white/10 active:scale-95"
@@ -539,22 +592,22 @@ const CRM: React.FC = () => {
                                             <thead>
                                                 <tr className="border-b border-white/5 uppercase text-[10px] font-black text-slate-500 tracking-[0.2em]">
                                                     <th className="pb-6 px-4">
-                                                        {activeTab === 'enquiries' ? 'Sender Details' : 'Content Details'}
+                                                        {activeTab === 'enquiries' ? 'Sender Details' : activeTab === 'subscribers' ? 'Subscriber' : activeTab === 'visitors' ? 'Visitor Activity' : 'Content Details'}
                                                     </th>
                                                     <th className="pb-6 px-4">
-                                                        {activeTab === 'enquiries' ? 'Topic' : 'Category'}
+                                                        {activeTab === 'enquiries' ? 'Topic' : activeTab === 'subscribers' ? 'Join Date' : activeTab === 'visitors' ? 'Notifications' : 'Category'}
                                                     </th>
                                                     <th className="pb-6 px-4 text-right">Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-white/5">
                                                 {items.filter(i =>
-                                                    (i.title || i.name || i.firstName || i.lastName || '').toLowerCase().includes(searchQuery.toLowerCase())
+                                                    (i.title || i.name || i.firstName || i.lastName || i.email || i.sessionId || i.pagePath || '').toLowerCase().includes(searchQuery.toLowerCase())
                                                 ).map((item) => (
                                                     <tr key={item._id} className="group hover:bg-white/[0.02] transition-colors">
                                                         <td className="py-4 lg:py-6 px-4">
                                                             <div className="flex items-center gap-3 lg:gap-4">
-                                                                {activeTab !== 'enquiries' ? (
+                                                                {activeTab !== 'enquiries' && activeTab !== 'subscribers' && activeTab !== 'visitors' ? (
                                                                     <>
                                                                         <div className="relative flex-shrink-0">
                                                                             <img src={item.image} className="w-12 h-12 lg:w-14 lg:h-14 rounded-2xl object-cover border border-white/10 group-hover:border-primary-500/50 transition-colors" alt="" />
@@ -565,7 +618,7 @@ const CRM: React.FC = () => {
                                                                             <div className="text-slate-500 text-xs lg:text-sm font-medium line-clamp-1 max-w-[200px] lg:max-w-xs">{item.excerpt || item.role || item.streamer}</div>
                                                                         </div>
                                                                     </>
-                                                                ) : (
+                                                                ) : activeTab === 'enquiries' ? (
                                                                     <div className="flex items-center gap-3">
                                                                         <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 font-black text-lg uppercase flex-shrink-0">
                                                                             {item.firstName?.[0]}{item.lastName?.[0]}
@@ -575,12 +628,55 @@ const CRM: React.FC = () => {
                                                                             <div className="text-slate-500 text-xs font-medium">{item.email}</div>
                                                                         </div>
                                                                     </div>
+                                                                ) : activeTab === 'subscribers' ? (
+                                                                    <div className="flex items-center gap-3">
+                                                                        <div className={`w-12 h-12 rounded-2xl ${item.type === 'vip' ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500' : 'bg-blue-500/10 border-blue-500/20 text-blue-500'} border flex items-center justify-center flex-shrink-0`}>
+                                                                            {item.type === 'vip' ? <Crown size={22} /> : <Mail size={22} />}
+                                                                        </div>
+                                                                        <div>
+                                                                            <div className={`font-bold text-white text-base transition-colors ${item.type === 'vip' ? 'group-hover:text-yellow-400' : 'group-hover:text-blue-400'}`}>{item.email}</div>
+                                                                            <div className="flex items-center gap-2">
+                                                                                <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded ${item.type === 'vip' ? 'bg-yellow-500/10 text-yellow-500' : 'bg-blue-500/10 text-blue-500'}`}>
+                                                                                    {item.type || 'newsletter'}
+                                                                                </span>
+                                                                                <span className="text-[10px] font-medium text-slate-500">Member Since {new Date(item.createdAt).getFullYear()}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="flex items-center gap-3">
+                                                                        <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-500 flex-shrink-0">
+                                                                            <Eye size={22} />
+                                                                        </div>
+                                                                        <div className="min-w-0">
+                                                                            <div className="flex items-center gap-2 mb-0.5">
+                                                                                <div className="font-bold text-white text-base truncate">Viewing {item.pagePath || '/'}</div>
+                                                                                {Math.abs(Date.now() - new Date(item.lastSeen || item.updatedAt).getTime()) < 300000 && (
+                                                                                    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                                                                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                                                                        <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Live</span>
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
+                                                                            <div className="flex items-center gap-2">
+                                                                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Session {(item.sessionId || 'anon').substring(0, 8)}...</span>
+                                                                                <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20">{item.history?.length || 0} Pages</span>
+                                                                                <span className="text-[10px] font-bold text-slate-600">Seen {new Date(item.lastSeen || item.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
                                                                 )}
                                                             </div>
                                                         </td>
                                                         <td className="py-6 px-4">
-                                                            <span className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border tracking-wider ${activeTab === 'enquiries' ? 'bg-rose-500/5 text-rose-400 border-rose-500/10' : 'bg-white/5 text-slate-400 border-white/5'}`}>
-                                                                {item.topic || item.category || item.brand || 'Personal'}
+                                                            <span className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border tracking-wider ${activeTab === 'enquiries' ? 'bg-rose-500/5 text-rose-400 border-rose-500/10' :
+                                                                activeTab === 'subscribers' ? (item.type === 'vip' ? 'bg-yellow-500/5 text-yellow-400 border-yellow-500/10' : 'bg-blue-500/5 text-blue-400 border-blue-500/10') :
+                                                                    activeTab === 'visitors' ? (item.notificationStatus === 'granted' ? 'bg-emerald-500/5 text-emerald-400 border-emerald-500/10' : 'bg-slate-500/5 text-slate-400 border-white/5') :
+                                                                        'bg-white/5 text-slate-400 border-white/5'
+                                                                }`}>
+                                                                {activeTab === 'subscribers' ? (item.type === 'vip' ? 'VIP MEMBER' : 'NEWSLETTER') :
+                                                                    activeTab === 'visitors' ? (item.notificationStatus === 'granted' ? 'Subscribed' : item.notificationStatus === 'denied' ? 'Blocked' : 'No Action') :
+                                                                        (item.topic || item.category || item.brand || 'Personal')}
                                                             </span>
                                                         </td>
                                                         <td className="py-6 px-4 text-right">

@@ -136,5 +136,61 @@ export const contentService = {
             method: 'DELETE'
         });
         return res.json();
+    },
+
+    getStats: async (): Promise<any> => {
+        try {
+            const res = await fetch(`${API_BASE}/stats`);
+            if (!res.ok) throw new Error('Fetch failed');
+            return await res.json();
+        } catch (error) {
+            console.error('API Error:', error);
+            return null;
+        }
+    },
+
+    getSubscribers: async (): Promise<any[]> => {
+        try {
+            const res = await fetch(`${API_BASE}/subscribers`);
+            if (!res.ok) throw new Error('Fetch failed');
+            return await res.json();
+        } catch (error) {
+            console.error('API Error:', error);
+            return [];
+        }
+    },
+
+    subscribeToNewsletter: async (email: string, type: 'newsletter' | 'vip' = 'newsletter') => {
+        return contentService.create('subscribers', { email, type });
+    },
+
+    trackVisitor: async (data: { path: string; notificationStatus?: string }) => {
+        let sessionId = sessionStorage.getItem('whatnew_session_id');
+        if (!sessionId) {
+            sessionId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+            sessionStorage.setItem('whatnew_session_id', sessionId);
+        }
+
+        try {
+            const res = await fetch(`${API_BASE}/visitors/track`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...data, sessionId })
+            });
+            return await res.json();
+        } catch (error) {
+            console.error('Tracking Error:', error);
+        }
+    },
+
+    getVisitors: async (): Promise<any[]> => {
+        try {
+            const res = await fetch(`${API_BASE}/visitors`);
+            if (!res.ok) throw new Error('Fetch failed');
+            return await res.json();
+        } catch (error) {
+            console.error('API Error:', error);
+            return [];
+        }
     }
 };

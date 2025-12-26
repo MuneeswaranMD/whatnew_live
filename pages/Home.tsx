@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ShoppingBag, Zap, Gift, Tag, Play, Mail, CheckCircle, Smartphone, QrCode, Globe, Users, TrendingUp, Shield, Star, Crown, Timer, Sparkles, MessageCircle, Activity, DollarSign, Award, Apple } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Zap, Gift, Tag, Play, Mail, CheckCircle, Smartphone, QrCode, Globe, Users, TrendingUp, Shield, Star, Crown, Timer, Sparkles, MessageCircle, Activity, DollarSign, Award, Apple, CheckCircle2, X } from 'lucide-react';
 import Reveal from '../components/Reveal';
 import { contentService, LiveStream, Drop, Testimonial } from '../services/contentService';
 
@@ -103,6 +103,13 @@ const Home: React.FC = () => {
   const [upcomingDrops, setUpcomingDrops] = useState<Drop[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [email, setEmail] = useState('');
+  const [subscribeStatus, setSubscribeStatus] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [isVipModalOpen, setIsVipModalOpen] = useState(false);
+  const [vipEmail, setVipEmail] = useState('');
+  const [vipStatus, setVipStatus] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [isVipSubscribing, setIsVipSubscribing] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -123,6 +130,43 @@ const Home: React.FC = () => {
     };
     fetchData();
   }, []);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    setIsSubscribing(true);
+    try {
+      await contentService.subscribeToNewsletter(email);
+      setSubscribeStatus({ text: 'Thank you for subscribing!', type: 'success' });
+      setEmail('');
+      setTimeout(() => setSubscribeStatus(null), 5000);
+    } catch (error) {
+      setSubscribeStatus({ text: 'Already subscribed or invalid email.', type: 'error' });
+      setTimeout(() => setSubscribeStatus(null), 5000);
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
+
+  const handleVipJoin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!vipEmail) return;
+    setIsVipSubscribing(true);
+    try {
+      await contentService.subscribeToNewsletter(vipEmail, 'vip');
+      setVipStatus({ text: 'Welcome to the inner circle! You are on the VIP list.', type: 'success' });
+      setVipEmail('');
+      setTimeout(() => {
+        setVipStatus(null);
+        setIsVipModalOpen(false);
+      }, 3000);
+    } catch (error) {
+      setVipStatus({ text: 'Already on the waitlist or invalid email.', type: 'error' });
+      setTimeout(() => setVipStatus(null), 5000);
+    } finally {
+      setIsVipSubscribing(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -485,9 +529,12 @@ const Home: React.FC = () => {
           {/* Bottom CTA */}
           <Reveal animation="bounce-in" delay={200} className="mt-12 text-center">
             <p className="text-slate-400 mb-4">Want early access to all drops?</p>
-            <Link to="/contact" className="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-900 rounded-2xl font-bold hover:bg-slate-100 transition-all hover:scale-105">
+            <button
+              onClick={() => setIsVipModalOpen(true)}
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-900 rounded-2xl font-bold hover:bg-slate-100 transition-all hover:scale-105 shadow-xl"
+            >
               <Crown size={20} className="text-yellow-500" /> Join VIP Waitlist
-            </Link>
+            </button>
           </Reveal>
         </div>
       </section>
@@ -729,16 +776,32 @@ const Home: React.FC = () => {
               Stay updated with the latest offers and live shopping events.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
+            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
               <input
                 type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email address"
                 className="flex-1 px-6 py-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white/20 transition-all"
               />
-              <button className="bg-primary-600 text-white px-8 py-4 rounded-2xl font-bold hover:bg-primary-500 transition-all hover:scale-105 shadow-lg shadow-primary-600/30 whitespace-nowrap">
-                Subscribe Now
+              <button
+                type="submit"
+                disabled={isSubscribing}
+                className="bg-primary-600 text-white px-8 py-4 rounded-2xl font-bold hover:bg-primary-500 transition-all hover:scale-105 shadow-lg shadow-primary-600/30 whitespace-nowrap disabled:opacity-50"
+              >
+                {isSubscribing ? 'Processing...' : 'Subscribe Now'}
               </button>
-            </div>
+            </form>
+
+            {subscribeStatus && (
+              <Reveal animation="bounce-in">
+                <div className={`mt-6 p-4 rounded-2xl flex items-center justify-center gap-3 ${subscribeStatus.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
+                  {subscribeStatus.type === 'success' ? <CheckCircle2 size={20} /> : <Sparkles size={20} />}
+                  <span className="font-bold text-sm">{subscribeStatus.text}</span>
+                </div>
+              </Reveal>
+            )}
 
             <p className="text-slate-500 text-sm mt-6">Join 50,000+ subscribers. No spam, unsubscribe anytime.</p>
           </Reveal>
@@ -814,6 +877,58 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* VIP Waitlist Modal */}
+      {isVipModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onClick={() => setIsVipModalOpen(false)}></div>
+          <Reveal animation="slide-up" className="w-full max-w-lg bg-slate-900 border border-white/10 rounded-[40px] p-8 lg:p-12 relative z-10 shadow-2xl">
+            <button
+              onClick={() => setIsVipModalOpen(false)}
+              className="absolute top-6 right-6 text-slate-500 hover:text-white transition-colors"
+            >
+              <X size={24} />
+            </button>
+
+            <div className="text-center mb-8">
+              <div className="w-20 h-20 bg-yellow-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-yellow-500/20">
+                <Crown size={40} className="text-yellow-500" />
+              </div>
+              <h3 className="text-3xl font-black text-white mb-2 underline decoration-yellow-500 underline-offset-8">VIP INNER CIRCLE</h3>
+              <p className="text-slate-400 font-medium">Get 1-hour early access to all limited drops and exclusive member-only pricing.</p>
+            </div>
+
+            <form onSubmit={handleVipJoin} className="space-y-4">
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={20} />
+                <input
+                  type="email"
+                  required
+                  value={vipEmail}
+                  onChange={(e) => setVipEmail(e.target.value)}
+                  placeholder="Enter your VIP email"
+                  className="w-full pl-12 pr-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:bg-white/10 transition-all"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={isVipSubscribing}
+                className="w-full py-5 bg-gradient-to-r from-yellow-500 to-orange-500 text-slate-900 font-black rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-yellow-500/20 disabled:opacity-50"
+              >
+                {isVipSubscribing ? 'Processing...' : 'Secure My Spot Now'}
+              </button>
+            </form>
+
+            {vipStatus && (
+              <div className={`mt-6 p-4 rounded-2xl flex items-center gap-3 ${vipStatus.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
+                {vipStatus.type === 'success' ? <CheckCircle2 size={20} /> : <X size={20} />}
+                <span className="font-bold text-sm tracking-wide">{vipStatus.text}</span>
+              </div>
+            )}
+
+            <p className="text-center text-[10px] text-slate-500 uppercase tracking-[0.2em] font-black mt-8">Limited to 5,000 members worldwide</p>
+          </Reveal>
+        </div>
+      )}
     </div>
   );
 };
