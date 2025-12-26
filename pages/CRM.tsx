@@ -403,9 +403,9 @@ const CRM: React.FC = () => {
 
             {/* Editor Modal */}
             {isEditing && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-6">
-                    <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-xl" onClick={() => setIsEditing(false)}></div>
-                    <Reveal animation="zoom-in" className="relative w-full max-w-3xl bg-slate-900 border border-white/10 rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-2 sm:p-4 md:p-6 lg:p-10">
+                    <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-2xl" onClick={() => setIsEditing(false)}></div>
+                    <Reveal animation="zoom-in" className="relative w-full max-w-3xl bg-slate-900 border border-white/10 rounded-[24px] md:rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[98vh] md:max-h-[90vh]">
                         <form onSubmit={handleSubmit} className="flex flex-col h-full">
                             <div className="p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
                                 <div className="flex items-center gap-4">
@@ -422,7 +422,7 @@ const CRM: React.FC = () => {
                                 </button>
                             </div>
 
-                            <div className="p-6 lg:p-10 overflow-y-auto space-y-10 flex-1 scrollbar-hide">
+                            <div className="p-6 lg:p-10 overflow-y-auto space-y-10 flex-1 custom-scrollbar">
                                 {/* Section 1: Core Information */}
                                 <div className="space-y-6">
                                     <div className="flex items-center gap-3 border-b border-white/5 pb-4">
@@ -643,6 +643,7 @@ const CRM: React.FC = () => {
                                         )}
                                     </div>
                                 </div>
+                                <div className="h-20 lg:h-0"></div> {/* Bottom spacer for better scroll clearance */}
                             </div>
 
                             <div className="p-6 lg:p-8 border-t border-white/5 flex flex-col sm:flex-row justify-end gap-3 bg-white/[0.02]">
